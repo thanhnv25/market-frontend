@@ -5,6 +5,6 @@ import tokenDataSlice from './tokenDataSlice'
 export default configureStore({
   reducer: {
     provider: providerSlice,
-    tokenData: tokenDataSlice,
+    tokenData: tokenDataSlice
   },
 })

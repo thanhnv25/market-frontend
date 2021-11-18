@@ -1,25 +1,36 @@
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router'
 import { Redirect, Route, Switch } from 'react-router-dom'
+import useBalance from '../hooks/useBalance'
+import useLanguage from '../hooks/useLanguage'
 import useProvider from '../hooks/useProvider'
+import { connectWallet } from '../utils'
 import './App.scss'
 import Create from './Create'
 import Marketplace from './Marketplace'
 import MyNft from './MyNft'
-import useLanguage from '../hooks/useLanguage'
-import useBalance from '../hooks/useBalance'
-import { connectWallet } from '../utils'
+import io from 'socket.io-client'
 
 function App() {
   useProvider()
   const account = useSelector((state) => state.provider.account)
   const { pathname } = useLocation()
   const history = useHistory()
-  const activeIndex = pathname === '/marketplace' ? 0 : pathname === '/create' ? 2 : pathname === '/mynft' ? 1 : undefined
+  const activeIndex =
+    pathname === '/marketplace' ? 0 : pathname === '/create' ? 2 : pathname === '/mynft' ? 1 : undefined
   const { t } = useTranslation()
   const [language, toggleLanguage] = useLanguage()
+  const [socketIO, setSocketIO] = useState()
+
   useBalance()
+
+  useEffect(() => {
+    if (!socketIO) {
+      setSocketIO(io('http://localhost:3000', { transports: ['websocket'] }))
+    }
+  }, [])
 
   return (
     <div className="app">
