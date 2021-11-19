@@ -18,6 +18,9 @@ const useListNftInListing = () => {
   useEffect(() => {
     ;(async () => {
       if (nftContract && nftMarketContract) {
+        console.log('process.env.REACT_APP_API_URL::>>', process.env.REACT_APP_API_URL)
+        const markets = await axios.get(`${process.env.REACT_APP_API_URL}/nfts/user/0x090030D40A193a5966014c2D0B014F21459cb33e`)
+        console.log('markets::>>', markets)
         // get list tokens
         const listItems = await nftMarketContract.fetchMarketItems()
 
