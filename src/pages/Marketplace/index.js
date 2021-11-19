@@ -8,7 +8,7 @@ import Modal from '../../components/Modal'
 import useListNftInListing from '../../hooks/useListNftInListing'
 import { ClassItem, ITEMS_PER_PAGE, OWNER_NFT_MARKET } from '../../constants'
 import { useSelector } from 'react-redux'
-import useListNftMyBought from '../../hooks/useListNftMyBought'
+// import useListNftMyBought from '../../hooks/useListNftMyBought'
 import _ from 'lodash'
 import useBlock from '../../hooks/useBlock'
 import Pagination from '@mui/material/Pagination'
@@ -64,7 +64,7 @@ export default function Marketplace() {
   const block = useBlock()
 
   const listNftIsListing = useListNftInListing()
-  const listNftIsMyBought = useListNftMyBought()
+  //const listNftIsMyBought = useListNftMyBought()
   const [pageCount, setPageCount] = useState(0)
   const [itemOffset, setItemOffset] = useState(0)
   const [currentItems, setCurrentItems] = useState([])
@@ -120,7 +120,7 @@ export default function Marketplace() {
     filterByClassify,
     filterByOrderType,
     listNftIsListing,
-    listNftIsMyBought,
+   // listNftIsMyBought,
     search,
     sortBy,
     itemOffset,

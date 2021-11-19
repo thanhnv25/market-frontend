@@ -9,8 +9,6 @@ import useAlertCallback from '../hooks/useAlertCallback'
 import useApproveAll from '../hooks/useApproveAll'
 import useBuyNft from '../hooks/useBuyNft'
 import useMakeOffer from '../hooks/useMakeOffer'
-import useSellHistories from '../hooks/useSellHistories'
-import useListOffer from '../hooks/useListOffer'
 import useSellNft from '../hooks/useSellNft'
 import useClaimReward from '../hooks/useClaimReward'
 import useBlock from '../hooks/useBlock'
@@ -89,13 +87,13 @@ export default forwardRef(function Card(props, ref) {
   const onSell = useSellNft()
   const onLevelUp = useLevelUp()
   const { isApprove, onApprove } = useApproveAll()
-  const histories = useSellHistories(item.tokenId)
+  const histories = item.sellHistories
   const chainId = useSelector((state) => state.provider.chainId)
   const onCancelMarketItem = useCancelMarketItem()
   const onClaimReward = useClaimReward()
   const block = useBlock()
   const isEndAuction = block >= item.endBlock
-  const offers = useListOffer(item.id)
+  const offers = item.offers
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
   const isMyNft = item.buyer === undefined && item.seller === undefined
