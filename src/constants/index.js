@@ -45,6 +45,12 @@ export const EXPLORER_TX = {
   [ChainId.ROPSTEN]: undefined,
   [ChainId.RINKEBY]: 'https://rinkeby.etherscan.io/tx/',
 }
+export const BLOCK_COUNT_DOWN = {
+  [ChainId.MAINNET]: undefined,
+  [ChainId.ROPSTEN]: undefined,
+  [ChainId.RINKEBY]: 'https://rinkeby.etherscan.io/block/countdown/',
+}
+
 
 export const ClassItem = {
   BEAST: 1,

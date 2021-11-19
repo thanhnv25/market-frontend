@@ -23,7 +23,7 @@ import { ReactComponent as Mech } from '../assets/mech.svg'
 import { ReactComponent as Bug } from '../assets/bug.svg'
 import useCancelMarketItem from '../hooks/useCancelMarketItem'
 import useLevelUp from '../hooks/useLevelUp'
-import { copyBuyer, inforTx,getTxSuccess } from '../utils/index'
+import { copyBuyer, inforTx, getTxSuccess, blockRemains } from '../utils/index'
 const StyledCard = styled(Box)`
   height: 340px;
   width: 225px;
@@ -205,238 +205,249 @@ export default forwardRef(function Card(props, ref) {
           ) : null
           }
           {showBuyOrSellButton && (!isSell && !isBuyDirectly || isMySell) ? (
-            <Typography fontSize="12px" color="#90b8ef" lineHeight="12px" fontWeight={400}>
-              {item.remainBlock <= 0 ? t('Auction ended') : t('Time remains: ') + secondsToHms((item.remainBlock * SECOND_PER_BLOCK[chainId]))}
-            </Typography>
-          ) : null}
-          {showBuyOrSellButton && isSell && isApprove ? (
-            <Box>
 
-              <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", margin: "10px -5px 24px" }}>
-                <CssTextField
-                  style={{ margin: "0 5px" }}
-                  width="50%"
-                  unit="ETH"
-                  type="number"
-                  label={t('Min Price')}
-                  variant="filled"
-                  myBackgroundColor="#ffffff"
-                  myColor="#ffffff"
-                  value={minSellPrice}
-                  onChange={(e) => {
-                    setMinSellPrice(e.target.value)
-                  }}
-                />
-                <CssTextField
-                  width="50%"
-                  unit="ETH"
-                  type="number"
-                  label={t('Max Price')}
-                  variant="filled"
-                  myBackgroundColor="#ffffff"
-                  myColor="#ffffff"
-                  value={maxSellPrice}
-                  onChange={(e) => {
-                    setMaxSellPrice(e.target.value)
-                  }}
-                />
-              </div>
-              <CssTimeTextField
-                id="datetime-local"
-                label="Auction close"
-                type="datetime-local"
-                style={{ margin: "0 0 12px" }}
-                inputProps={{
-                  min: currentdate
-                }}
-                defaultValue={currentdate}
-                InputLabelProps={{
-                  shrink: true,
-                }}
-                width="100%"
-                onChange={(e) => setBlockNumber(timeToBlockNumber(e.target.value, chainId))}
-              />
-              <Typography style={{ margin: "0 0 12px" }} color={blockNumber >= 10 ? "#ffffff" : "#c23a3a"} width="100%" fontSize="12px" fontWeight={400}>
-                {t("Number of block to close: ") + blockNumber}
+            <Box display="flex" justifyContent="space-between">
+              <Typography fontSize="14px" color="#90b8ef" fontWeight={400}>
+                {item.remainBlock <= 0 ? t('Auction ended') : t('Auction end at block: ') + item.endBlock}
               </Typography>
+              <MI.AccessAlarms
+                onClick={() => blockRemains(chainId, item.endBlock)}
+                fontSize="small"
+                style={{ fill: '#c23a3a', cursor: 'pointer' }}
+              />
             </Box>
 
-          ) : !isApprove && isSell ? null : item.minPrice !== item.price ? (
-            <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
-              {item.minPrice + ' to ' + item.price + ' ETH'}
-            </Typography>
-          ) : (
-            <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
-              {item.price === undefined ? null : item.price + ' ETH'}
-            </Typography>
-          )}
-          {showBuyOrSellButton && !isMySell && !isOwner && !isBuyDirectly && !isEndAuction ? (
-            <CssTextField
-              width="60%"
-              unit="ETH"
-              type="number"
-              disabled={item.remainBlock <= 0 && !isBuyDirectly}
-              InputProps={{ inputProps: { min: 0, max: 10 } }}
-              label={t('Offer amount')}
-              variant="filled"
-              myBackgroundColor="#ffffff"
-              myColor="#ffffff"
-              value={offerPrice}
-              onChange={(e) => {
-                setOfferPrice(e.target.value)
-              }}
-            />
+
+
           ) : null}
-          {showBuyOrSellButton && !isOwner && !isBuyDirectly && item.currentPrice > 0 ? (
-            <div>
-              <br />
-              <Button variant="outlined" onClick={handleClickOpen}>
-                List Offer
-              </Button>
-              <OfferDialog
-                listOffer={offers}
-                open={open}
-                onClose={handleClose}
+        {showBuyOrSellButton && isSell && isApprove ? (
+          <Box>
+
+            <div style={{ width: "100%", display: "flex", alignItems: "center", justifyContent: "center", margin: "10px -5px 24px" }}>
+              <CssTextField
+                style={{ margin: "0 5px" }}
+                width="50%"
+                unit="ETH"
+                type="number"
+                label={t('Min Price')}
+                variant="filled"
+                myBackgroundColor="#ffffff"
+                myColor="#ffffff"
+                value={minSellPrice}
+                onChange={(e) => {
+                  setMinSellPrice(e.target.value)
+                }}
+              />
+              <CssTextField
+                width="50%"
+                unit="ETH"
+                type="number"
+                label={t('Max Price')}
+                variant="filled"
+                myBackgroundColor="#ffffff"
+                myColor="#ffffff"
+                value={maxSellPrice}
+                onChange={(e) => {
+                  setMaxSellPrice(e.target.value)
+                }}
               />
             </div>
-          ) : showBuyOrSellButton && !isOwner && !isBuyDirectly ? (
-            <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
-              {t('No offer')}
-            </Typography>
-          ) : null}
-
-          {showBuyOrSellButton && !isOwner && !isBuyDirectly && item.currentPrice > 0 ? (
-            <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
-              {t('Latest price: ') + item.currentPrice} ETH
-            </Typography>
-          ) : null}
-        </Box>
-        {!account && showBuyOrSellButton && (
-          <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={connectWallet}>
-            {t('Connect Metamask')}
-          </StyledButton>
-        )}
-        {account && !isApprove && showBuyOrSellButton && isSell && (
-          <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={onApprove}>
-            {t('Approve NFT')}
-          </StyledButton>
-        )}
-        {account && showBuyOrSellButton && isMySell && (
-          <StyledButton
-            variant="contained"
-            style={{ margin: '8px 0' }}
-            onClick={() => {
-              onCancelMarketItem(item.id)
-            }}
-          >
-            {t('Cancel')}
-          </StyledButton>
-        )}
-        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) &&
-          isLatestOffer && isEndAuction && (
-            <StyledButton
-              variant="contained"
-              style={{ margin: '8px 0' }}
-              onClick={() => {
-                onClaimReward(item, offers[0])
+            <CssTimeTextField
+              id="datetime-local"
+              label="Auction close"
+              type="datetime-local"
+              style={{ margin: "0 0 12px" }}
+              inputProps={{
+                min: currentdate
               }}
-            >
-              {t('Claim')}
-            </StyledButton>
-          )}
-        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && !isEndAuction && (
-          <StyledButton
-            variant="contained"
-            style={{ margin: '8px 0' }}
-            disabled={item.remainBlock <= 0 && !isBuyDirectly}
-            onClick={() => {
-              onClose && onClose()
-              if (isSell && isApprove) {
-                if (!minSellPrice || !maxSellPrice) {
-                  alertMessage(t('Error'), t('Please fill input'), 'error')
-                }
-                if (minSellPrice && parseFloat(minSellPrice) === 0) {
-                  alertMessage(t('Error'), t('Min sell price must greater than 0'), 'error')
-                }
-                if (maxSellPrice && parseFloat(maxSellPrice) === 0) {
-                  alertMessage(t('Error'), t('Min sell price must greater than 0'), 'error')
-                }
-                if (blockNumber < 10) {
-                  alertMessage(t('Error'), t('Number of block must >= 10 '), 'error')
-                  return
-                }
-                onSell(item, minSellPrice, maxSellPrice, blockNumber)
-                return
-              }
-              if (!isBuyDirectly) {
-                onOffer(item, offerPrice)
-                return
-              }
-              if (isBuyDirectly) {
-                onBuy(item)
-                return
-              }
-            }}
-          >
-            {isSell && isApprove ? t('Sell') : isBuyDirectly ? t('Buy Directly') : t('Make Offer')}
-          </StyledButton>
+              defaultValue={currentdate}
+              InputLabelProps={{
+                shrink: true,
+              }}
+              width="100%"
+              onChange={(e) => setBlockNumber(timeToBlockNumber(e.target.value, chainId))}
+            />
+            <Typography style={{ margin: "0 0 12px" }} color={blockNumber >= 10 ? "#ffffff" : "#c23a3a"} width="100%" fontSize="12px" fontWeight={400}>
+              {t("Number of block to close: ") + blockNumber}
+            </Typography>
+          </Box>
+
+        ) : !isApprove && isSell ? null : item.minPrice !== item.price ? (
+          <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
+            {item.minPrice + ' to ' + item.price + ' ETH'}
+          </Typography>
+        ) : (
+          <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
+            {item.price === undefined ? null : item.price + ' ETH'}
+          </Typography>
         )}
+        {showBuyOrSellButton && !isMySell && !isOwner && !isBuyDirectly && !isEndAuction ? (
+          <CssTextField
+            width="60%"
+            unit="ETH"
+            type="number"
+            disabled={item.remainBlock <= 0 && !isBuyDirectly}
+            InputProps={{ inputProps: { min: 0, max: 10 } }}
+            label={t('Offer amount')}
+            variant="filled"
+            myBackgroundColor="#ffffff"
+            myColor="#ffffff"
+            value={offerPrice}
+            onChange={(e) => {
+              setOfferPrice(e.target.value)
+            }}
+          />
+        ) : null}
+        {showBuyOrSellButton && !isOwner && !isBuyDirectly && item.currentPrice > 0 ? (
+          <div>
+            <br />
+            <Button variant="outlined" onClick={handleClickOpen}>
+              List Offer
+            </Button>
+            <OfferDialog
+              listOffer={offers}
+              open={open}
+              onClose={handleClose}
+            />
+          </div>
+        ) : showBuyOrSellButton && !isOwner && !isBuyDirectly ? (
+          <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
+            {t('No offer')}
+          </Typography>
+        ) : null}
+
+        {showBuyOrSellButton && !isOwner && !isBuyDirectly && item.currentPrice > 0 ? (
+          <Typography color="#718099" fontSize="12px" lineHeight="20px" fontWeight={400}>
+            {t('Latest price: ') + item.currentPrice} ETH
+          </Typography>
+        ) : null}
       </Box>
-      {history && (
-        <Box
-          style={{
-            background: '#334756',
-            width: '100%',
-            borderRadius: '0 0 12px 12px',
-            minHeight: '100px',
-            padding: '16px',
-            overflow: 'auto',
+      {!account && showBuyOrSellButton && (
+        <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={connectWallet}>
+          {t('Connect Metamask')}
+        </StyledButton>
+      )}
+      {account && !isApprove && showBuyOrSellButton && isSell && (
+        <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={onApprove}>
+          {t('Approve NFT')}
+        </StyledButton>
+      )}
+      {account && showBuyOrSellButton && isMySell && (
+        <StyledButton
+          variant="contained"
+          style={{ margin: '8px 0' }}
+          onClick={() => {
+            onCancelMarketItem(item.id)
           }}
         >
-          <Box display="flex" justifyContent="space-between">
-            <Typography fontSize="18px" color="#ffffff" fontWeight={500}>
-              {t('Buyer')}
-            </Typography>
-            <Typography fontSize="18px" color="#ffffff" fontWeight={500}>
-              {t('Price & Time')}
-            </Typography>
-          </Box>
-          <Box marginTop="8px" flex={1}>
-            {histories.length ? (
-              histories.map((item, index) => {
-                return (
-                  <Box display="flex" justifyContent="space-between">
-                    <MI.CopyAllSharp
-                      onClick={() => copyBuyer(item.buyer)}
-                      fontSize="big"
-                      style={{ fill: '#c23a3a', cursor: 'pointer' }}
-                    />
-                    <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                      {`${item.buyer.slice(0, 6)}...${item.buyer.slice(item.buyer.length - 4, item.buyer.length)}`}
-                    </Typography>
-                    <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                      {item.price} ETH ({item.time})
-                    </Typography>
-                    <Box>
-                      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
-                      <i class="fas fa-external-link-alt" style={{ color: '#c23a3a', cursor: "pointer", visibility: getTxSuccess()[item.itemMarketId] ? 'unset' : 'hidden' }}
-                        onClick={() => inforTx(chainId, item.itemMarketId)}
-                      />
-
-                    </Box>
-                  </Box>
-                )
-              })
-            ) : (
-              <Box display="flex" justifyContent="space-between" textAlign="center">
-                <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                  {t('No history')}
-                </Typography>
-              </Box>
-            )}
-          </Box>
-        </Box>
+          {t('Cancel')}
+        </StyledButton>
       )}
-    </StyledCard>
+      {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) &&
+        isLatestOffer && isEndAuction && (
+          <StyledButton
+            variant="contained"
+            style={{ margin: '8px 0' }}
+            onClick={() => {
+              onClaimReward(item, offers[0])
+            }}
+          >
+            {t('Claim')}
+          </StyledButton>
+        )}
+      {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && !isEndAuction && (
+        <StyledButton
+          variant="contained"
+          style={{ margin: '8px 0' }}
+          disabled={item.remainBlock <= 0 && !isBuyDirectly}
+          onClick={() => {
+            onClose && onClose()
+            if (isSell && isApprove) {
+              if (!minSellPrice || !maxSellPrice) {
+                alertMessage(t('Error'), t('Please fill input'), 'error')
+              }
+              if (minSellPrice && parseFloat(minSellPrice) === 0) {
+                alertMessage(t('Error'), t('Min sell price must greater than 0'), 'error')
+              }
+              if (maxSellPrice && parseFloat(maxSellPrice) === 0) {
+                alertMessage(t('Error'), t('Min sell price must greater than 0'), 'error')
+              }
+              if (blockNumber < 10) {
+                alertMessage(t('Error'), t('Number of block must >= 10 '), 'error')
+                return
+              }
+              onSell(item, minSellPrice, maxSellPrice, blockNumber)
+              return
+            }
+            if (!isBuyDirectly) {
+              onOffer(item, offerPrice)
+              return
+            }
+            if (isBuyDirectly) {
+              onBuy(item)
+              return
+            }
+          }}
+        >
+          {isSell && isApprove ? t('Sell') : isBuyDirectly ? t('Buy Directly') : t('Make Offer')}
+        </StyledButton>
+      )}
+    </Box>
+      {
+    history && (
+      <Box
+        style={{
+          background: '#334756',
+          width: '100%',
+          borderRadius: '0 0 12px 12px',
+          minHeight: '100px',
+          padding: '16px',
+          overflow: 'auto',
+        }}
+      >
+        <Box display="flex" justifyContent="space-between">
+          <Typography fontSize="18px" color="#ffffff" fontWeight={500}>
+            {t('Buyer')}
+          </Typography>
+          <Typography fontSize="18px" color="#ffffff" fontWeight={500}>
+            {t('Price & Time')}
+          </Typography>
+        </Box>
+        <Box marginTop="8px" flex={1}>
+          {histories.length ? (
+            histories.map((item, index) => {
+              return (
+                <Box display="flex" justifyContent="space-between">
+                  <MI.CopyAllSharp
+                  
+                    onClick={() => copyBuyer(item.buyer)}
+                    fontSize="small"
+                    style={{ fill: '#c23a3a', cursor: 'pointer' }}
+                  />
+                  <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
+                    {`${item.buyer.slice(0, 6)}...${item.buyer.slice(item.buyer.length - 4, item.buyer.length)}`}
+                  </Typography>
+                  <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
+                    {item.price} ETH ({item.time})
+                  </Typography>
+                    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
+                    <i class="fas fa-external-link-alt" style={{ color: "#c23a3a", cursor: "pointer", visibility: getTxSuccess()[item.itemMarketId] ? 'unset' : 'hidden' }}
+                      onClick={() => inforTx(chainId, item.itemMarketId)}
+                    />
+                </Box>
+              )
+            })
+          ) : (
+            <Box display="flex" justifyContent="space-between" textAlign="center">
+              <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
+                {t('No history')}
+              </Typography>
+            </Box>
+          )}
+        </Box>
+      </Box>
+    )
+  }
+    </StyledCard >
   )
 })
