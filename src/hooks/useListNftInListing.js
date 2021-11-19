@@ -13,6 +13,7 @@ const useListNftInListing = () => {
   useEffect(() => {
     if (socket) {
       socket.on('NeedUpdateData', (timestamp) => {
+        console.log('socket::>>', timestamp)
         setTimestamp(timestamp)
       })
     }
@@ -55,7 +56,8 @@ const useListNftInListing = () => {
       }),
     )
     return data
-  }, [block])
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   useEffect(() => {
     ;(async () => {
       const data = await fetchData()
