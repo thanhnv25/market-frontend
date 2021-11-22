@@ -81,7 +81,7 @@ export default forwardRef(function Card(props, ref) {
   const [maxSellPrice, setMaxSellPrice] = useState('')
   const [offerPrice, setOfferPrice] = useState('')
   const { showBuyOrSellButton, history, onClose, item } = props
-  const [isBuyDirectly, setIsBuyDirectly] = useState(item.minPrice === item.maxPrice)
+  const [isBuyDirectly, setIsBuyDirectly] = useState(item.minPrice === item.price)
   const account = useSelector((state) => state.provider.account) ?? ''
   const onBuy = useBuyNft()
   const onOffer = useMakeOffer()
@@ -203,6 +203,7 @@ export default forwardRef(function Card(props, ref) {
           ></StyledImage>
           {showBuyOrSellButton && !isMySell && !isOwner ? (
             <Switch
+              defaultChecked={false}
               disabled={item.minPrice === item.price}
               checked={!isBuyDirectly}
               onChange={(e) => {
