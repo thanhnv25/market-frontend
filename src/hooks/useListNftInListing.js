@@ -1,22 +1,30 @@
 import axios from 'axios'
 import { ethers } from 'ethers'
-import { useEffect, useState } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useCallback, useEffect, useState } from 'react'
 import useBlock from './useBlock'
 
 const useListNftInListing = () => {
   const [list, setList] = useState([])
-  const dispatch = useDispatch()
+  const [timestamp, setTimestamp] = useState([])
   const block = useBlock()
 
-  const fetchData = async () => {
+  const socket = window.socket
+
+  useEffect(() => {
+    if (socket) {
+      socket.on('NeedUpdateData', (timestamp) => {
+        console.log('socket::>>', timestamp)
+        setTimestamp(timestamp)
+      })
+    }
+  }, [socket])
+
+  const fetchData = useCallback(async () => {
     const blockMax = Number.MAX_SAFE_INTEGER
-    console.log(blockMax-block)
-    const availableItem = await axios.get(`${process.env.REACT_APP_API_URL}/nft-market/items/9007199254740991`)
-    // console.log('markets::>>', availableItem)
+    const availableItem = await axios.get(`${process.env.REACT_APP_API_URL}/nft-market/items/${blockMax}`)
     // get list tokens
     const listItems = await availableItem.data
-    console.log("list: ", listItems)
+    console.log('listItems::>>', listItems)
     const data = await Promise.all(
       listItems.itemMarket.map(async (i) => {
         let minPrice = ethers.utils.formatUnits(i.minPrice.toString(), 'ether')
@@ -24,7 +32,6 @@ const useListNftInListing = () => {
         let currentPrice = ethers.utils.formatUnits(i.currentPrice.toString(), 'ether')
         let blockEnd = i.endBlock
         let remainBlock = blockEnd - block
-        console.log("blockend"+blockEnd, block)
         let item = {
           id: i.itemId.toString(),
           minPrice,
@@ -43,22 +50,21 @@ const useListNftInListing = () => {
           remainBlock,
           endBlock: blockEnd,
           sellHistories: i.nft.sellHistories,
-          offers: i.offers
+          offers: i.offers,
         }
         return item
       }),
     )
     return data
-  }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   useEffect(() => {
-    ; (async () => {
-
+    ;(async () => {
       const data = await fetchData()
       setList(data)
       return true
     })()
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dispatch])
+  }, [fetchData, timestamp])
   return list
 }
 
