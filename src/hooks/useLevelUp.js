@@ -17,7 +17,7 @@ const useLevelUp = () => {
         const updateStatusTx = await nftContract.upgradeLevel(nftId, {
           value: ethers.utils.parseUnits(LEVEL_UP_FEE.toString(), 'ether').toString(),
         })
-        saveTxPending(updateStatusTx.hash, t('Upgrade level #{{id}} .', {id: nftId}))
+        saveTxPending(updateStatusTx.hash, t('Upgrade level #{{id}}.', {id: nftId}))
         alertMessage(t('Submitted'), t('Level up transaction submitted!'), 'success')
         return true
       } catch (e) {

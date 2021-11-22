@@ -2,7 +2,8 @@
   "Marketplace": "Marketplace",
   "Let's create a new Vnext in a few easy steps": "Let's create a new Vnext in a few easy steps",
   "Buy NFT #{{id}} successfully.": "Buy NFT #{{id}} successfully.",
-  "Sell NFT #{{id}} successfully.": "Sell NFT #{{id}} successfully.",
-  "Upgrade level #{{id}} successfully.": "Upgrade level #{{id}} successfully.",
-  "Cancel item #{{id}} successfully.": "Cancel item #{{id}} successfully."
+  "Sell NFT #{{id}}.": "Sell NFT #{{id}}.",
+  "Upgrade level #{{id}}.": "Upgrade level #{{id}}.",
+  "Cancel item #{{id}}.": "Cancel item #{{id}}.",
+  "Cancel auction item #{{id}}.": "Cancel auction item #{{id}}."
 }
