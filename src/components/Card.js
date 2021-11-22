@@ -100,7 +100,7 @@ export default forwardRef(function Card(props, ref) {
   const isOwner = item.buyer.toLowerCase() === account.toLowerCase()
   const [blockNumber, setBlockNumber] = useState(0)
   var currentdate = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0]
-  const isLatestOffer = offers[0]?.asker.toLowerCase() === account.toLowerCase()
+  const isLatestOffer = offers?.length? offers[0].asker.toLowerCase() === account.toLowerCase() : false
   function secondsToHms(d) {
     d = Number(d);
     if (d <= 0) return 0
@@ -412,7 +412,7 @@ export default forwardRef(function Card(props, ref) {
           </Typography>
         </Box>
         <Box marginTop="8px" flex={1}>
-          {histories.length ? (
+          {histories?.length ? (
             histories.map((item, index) => {
               return (
                 <Box display="flex" justifyContent="space-between">
