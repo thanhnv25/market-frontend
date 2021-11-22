@@ -11,6 +11,7 @@ import './App.scss'
 import Create from './Create'
 import Marketplace from './Marketplace'
 import MyNft from './MyNft'
+import Lending from './Lend'
 import io from 'socket.io-client'
 
 function App() {
@@ -19,7 +20,7 @@ function App() {
   const { pathname } = useLocation()
   const history = useHistory()
   const activeIndex =
-    pathname === '/marketplace' ? 0 : pathname === '/create' ? 2 : pathname === '/mynft' ? 1 : undefined
+    pathname === '/marketplace' ? 0 : pathname === '/create' ? 3 : pathname === '/mynft' ? 1 : pathname === '/lending' ? 2 : undefined
   const { t } = useTranslation()
   const [language, toggleLanguage] = useLanguage()
   const [socketIO, setSocketIO] = useState()
@@ -46,7 +47,10 @@ function App() {
             <li tabIndex="0" className={activeIndex === 1 ? 'active' : ''} onClick={() => history.push('/mynft')}>
               {t('My NFT')}
             </li>
-            <li tabIndex="0" className={activeIndex === 2 ? 'active' : ''} onClick={() => history.push('/create')}>
+            <li tabIndex="0" className={activeIndex === 2 ? 'active' : ''} onClick={() => history.push('/lending')}>
+              {t('Lending')}
+            </li>
+            <li tabIndex="0" className={activeIndex === 3 ? 'active' : ''} onClick={() => history.push('/create')}>
               {t('Create')}
             </li>
           </ul>
@@ -70,6 +74,7 @@ function App() {
         <Switch>
           <Route exact strict path="/marketplace" component={Marketplace} />
           <Route exact strict path="/mynft" component={MyNft} />
+          <Route exact strict path="/lending" component={Lending} />
           <Route exact strict path="/create" component={Create} />
           <Route component={() => <Redirect to="/marketplace" />} />
         </Switch>

@@ -29,7 +29,6 @@ export const timeToBlockNumber =  (time, chainId) => {
     let pickTime = new Date(time).getTime()
     let currentTimeStamp = Date.now()
     let blockNumber = Math.floor((pickTime - currentTimeStamp) / 1000 / SECOND_PER_BLOCK[chainId])
-    console.log(blockNumber)
     
     return blockNumber
     // setBlockNumber(blockNumber)
