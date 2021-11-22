@@ -2,6 +2,8 @@ import axios from 'axios'
 import { ethers } from 'ethers'
 import { useCallback, useEffect, useState } from 'react'
 import useBlock from './useBlock'
+import moment from 'moment'
+
 
 const useListNftInListing = () => {
   const [list, setList] = useState([])
@@ -32,6 +34,21 @@ const useListNftInListing = () => {
         let currentPrice = ethers.utils.formatUnits(i.currentPrice.toString(), 'ether')
         let blockEnd = i.endBlock
         let remainBlock = blockEnd - block
+        const sellHistories = await Promise.all(
+          i.nft.sellHistories.map(async (history) => {
+            const createTime = new Date(history.createdAt);
+            const timestamp = createTime.getTime()/1000
+            console.log("create-at: ", timestamp)
+            let item = {
+              buyer: history.buyer,
+              price: ethers.utils.formatUnits(history.price.toString(), 'ether'),
+              timestamp,
+              time: moment.unix(timestamp).fromNow(),
+              itemMarketId: history.itemMarketId
+            }
+            return item
+          } )
+        )
         let item = {
           id: i.itemId.toString(),
           minPrice,
@@ -49,7 +66,7 @@ const useListNftInListing = () => {
           speed: i.nft.speed.toString(),
           remainBlock,
           endBlock: blockEnd,
-          sellHistories: i.nft.sellHistories,
+          sellHistories: sellHistories,
           offers: i.offers,
         }
         return item

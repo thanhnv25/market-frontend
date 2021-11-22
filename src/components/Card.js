@@ -296,7 +296,7 @@ export default forwardRef(function Card(props, ref) {
             }}
           />
         ) : null}
-        {showBuyOrSellButton && !isOwner && !isBuyDirectly && item.currentPrice > 0 ? (
+        {showBuyOrSellButton && !isOwner && !isBuyDirectly && (item.currentPrice > 0 ||offers.length >0) ? (
           <div>
             <br />
             <Button variant="outlined" onClick={handleClickOpen}>
