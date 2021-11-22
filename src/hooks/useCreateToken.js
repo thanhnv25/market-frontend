@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 import { create as ipfsHttpClient } from 'ipfs-http-client'
 import { useCallback } from 'react'
 import { useSelector } from 'react-redux'
-import { LISTING_PRICE, NFT_ADDRESS } from '../constants'
+import { LISTING_PRICE, NFT_ADDRESS, BLOCK_NUM_FOR_BUY } from '../constants'
 import useNtfContract from './useNtfContract'
 import useNtfMarketContract from './useNtfMarketContract'
 import useBlock from './useBlock'
@@ -20,7 +20,7 @@ const useCreateToken = () => {
   const { t } = useTranslation()
 
   return useCallback(
-    async (urlImage, minPrice, maxPrice, classId, stats,blockNumber) => {
+    async (urlImage, minPrice, maxPrice, classId, stats,blockNumber, option) => {
       try {
         const data = JSON.stringify({
           urlImage,
@@ -44,7 +44,7 @@ const useCreateToken = () => {
           // listing token to market
           minPrice = ethers.utils.parseUnits(minPrice, 'ether')
           maxPrice = ethers.utils.parseUnits(maxPrice, 'ether')
-          const blockClose = block + blockNumber
+          const blockClose = option == 2? block + blockNumber : block + BLOCK_NUM_FOR_BUY
           const listingTokenTx = await nftMarketContract.createMarketItem(
             NFT_ADDRESS[chainId],
             tokenId,
