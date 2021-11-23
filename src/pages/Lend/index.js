@@ -3,12 +3,12 @@ import styled from '@emotion/styled'
 import { CssTextField, StyledFormControl, StyledSelect } from '../Create'
 import { useTranslation } from 'react-i18next'
 import { useEffect, useState } from 'react'
-import Card from '../../components/Card'
-import Modal from '../../components/Modal'
-import useListNftInListing from '../../hooks/useListNftInListing'
-import { ClassItem, ITEMS_PER_PAGE, OWNER_NFT_MARKET } from '../../constants'
+import RentalCard from '../../components/RentalCard'
+import RentalCardModal from '../../components/RentalCardModal'
+import useListLend from '../../hooks/useListLend'
+import useListBorrow from '../../hooks/useListBorrow'
+import { ClassItem, ITEMS_PER_PAGE } from '../../constants'
 import { useSelector } from 'react-redux'
-// import useListNftMyBought from '../../hooks/useListNftMyBought'
 import _ from 'lodash'
 import useBlock from '../../hooks/useBlock'
 import Pagination from '@mui/material/Pagination'
@@ -62,30 +62,29 @@ export default function Marketplace() {
   const [openModal, setOpenModal] = useState(false)
   const [itemModal, setItemModal] = useState({})
   const block = useBlock()
-
-  const listNftIsListing = useListNftInListing()
-  //const listNftIsMyBought = useListNftMyBought()
+  const listLend = useListLend(block)
+  const listBorrow = useListBorrow(account)
   const [pageCount, setPageCount] = useState(0)
   const [itemOffset, setItemOffset] = useState(0)
   const [currentItems, setCurrentItems] = useState([])
+
   useEffect(() => {
     let result
     switch (filterByOrderType) {
-      case 'All':
-        result = listNftIsListing
+      case 'Rental list':
+        result = listLend
         break
-      case 'Buy from Admin':
+      case 'My rental list':
         result = _.filter(
-          listNftIsListing,
-          (item) => item.seller.toLowerCase() === OWNER_NFT_MARKET[chainId].toLowerCase()
-           && block < item.endBlock,
+          listLend,
+          (item) => item.lender.toLowerCase() === account
         )
         break
-      case 'Auction Ended':
-        result = _.filter(listNftIsListing, (item) => block >= item.endBlock && item.price !== item.minPrice)
+      case 'My borrow list':
+         result = listBorrow
         break
       default:
-        result = listNftIsListing
+         result = listLend
         break
     }
     if (filterByClassify !== 'All') {
@@ -119,8 +118,8 @@ export default function Marketplace() {
     chainId,
     filterByClassify,
     filterByOrderType,
-    listNftIsListing,
-   // listNftIsMyBought,
+    listLend,
+    listBorrow,
     search,
     sortBy,
     itemOffset,
@@ -139,7 +138,7 @@ export default function Marketplace() {
 
   return (
     <Container>
-      <Modal open={openModal} onClose={onCloseModal} itemModal={itemModal} />
+      <RentalCardModal open={openModal} onClose={onCloseModal} itemModal={itemModal} />
       <RowControl display="flex" justifyContent="center">
         <CssTextField
           width="15vw"
@@ -174,12 +173,12 @@ export default function Marketplace() {
             displayEmpty
             label={t('Type')}
             size="small"
-            defaultValue="All"
+            defaultValue="Rental list"
             onChange={(e) => setFilterByOrderType(e.target.value)}
           >
-            <MenuItem value="All">{t('All')}</MenuItem>
-            <MenuItem value="Buy from Admin">{t('Buy from Admin')}</MenuItem>
-            <MenuItem value="Auction Ended">{t('Auction Ended')}</MenuItem>
+            <MenuItem value="Rental list">{t('Rental list')}</MenuItem>
+            <MenuItem value="My rental list">{t('My rental list')}</MenuItem>
+            <MenuItem value="My borrow list">{t('My borrow list')}</MenuItem>
           </StyledSelect>
         </StyledFormControl>
         <StyledFormControl width="120px" value={filterByClassify}>
@@ -208,7 +207,7 @@ export default function Marketplace() {
         <RowGrid>
           {currentItems.map((item, index) => {
             return (
-              <Card
+              <RentalCard
                 onClick={() => {
                   setItemModal(item)
                   setOpenModal(true)
