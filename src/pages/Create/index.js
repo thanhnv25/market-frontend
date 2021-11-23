@@ -237,8 +237,8 @@ export default function Create() {
   }
 
   useEffect(() => {
-    setIsOwner(account === OWNER_NFT[chainId])
-  }, [account, chainId])
+    setIsOwner(account.toLowerCase() === OWNER_NFT[chainId].toLowerCase())
+  }, [account, chainId, setIsOwner])
 
   return (
     <Container>
