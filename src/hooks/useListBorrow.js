@@ -22,14 +22,14 @@ const useListBorrow = (res) => {
         return () => socket && socket.off('NeedUpdateData')
     }, [socket])
 
-    const fetchData = useCallback(async (account) => {
+    const fetchData = useCallback(async (account, currentBlock) => {
         const availableItem = await axios.get(`${process.env.REACT_APP_API_URL}/lend-items/borrow/${account}`)
         // get list lend
         const listItems = await availableItem.data
         const data = await Promise.all(
             listItems.borrows.map(async (i) => {
                 let blockEnd = i.lendBlockDuration
-                let remainBlock = blockEnd - await block
+                let remainBlock = blockEnd - currentBlock
                 const lendHistories = await Promise.all(
                     i.nft.lendHistories.map(async (history) => {
 
@@ -73,11 +73,11 @@ const useListBorrow = (res) => {
     }, [])
     useEffect(() => {
         ; (async () => {
-            const data = await fetchData(res)
+            const data = await fetchData(res, block)
             setList(data)
             return true
         })()
-    }, [fetchData, timestamp, res])
+    }, [fetchData, timestamp, res, block])
     return list
 }
 
