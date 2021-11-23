@@ -44,7 +44,7 @@ const useCreateToken = () => {
           // listing token to market
           minPrice = ethers.utils.parseUnits(minPrice, 'ether')
           maxPrice = ethers.utils.parseUnits(maxPrice, 'ether')
-          const blockClose = option == 2? block + blockNumber : block + BLOCK_NUM_FOR_BUY
+          const blockClose = option === 2? block + blockNumber : block + BLOCK_NUM_FOR_BUY
           const listingTokenTx = await nftMarketContract.createMarketItem(
             NFT_ADDRESS[chainId],
             tokenId,

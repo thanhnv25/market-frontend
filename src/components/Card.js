@@ -4,7 +4,7 @@ import { Box, Button, Switch, Typography, FormControl, InputLabel, MenuItem } fr
 import { forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { ClassItem, SECOND_PER_BLOCK } from '../constants'
+import { ClassItem } from '../constants'
 import useAlertCallback from '../hooks/useAlertCallback'
 import useApproveAll from '../hooks/useApproveAll'
 import useBuyNft from '../hooks/useBuyNft'
@@ -23,7 +23,8 @@ import { ReactComponent as Bug } from '../assets/bug.svg'
 import useCancelMarketItem from '../hooks/useCancelMarketItem'
 import useCancelMarketItemAuction from '../hooks/useCancelMarketItemAuction'
 import useLevelUp from '../hooks/useLevelUp'
-import { copyBuyer, inforTx, getTxSuccess, blockRemains } from '../utils/index'
+import { copyBuyer, blockRemains } from '../utils/index'
+import { EXPLORER_TX } from '../constants/index'
 const StyledCard = styled(Box)`
   height: 340px;
   width: 225px;
@@ -73,7 +74,7 @@ export default forwardRef(function Card(props, ref) {
     setOpen(true)
   }
 
-  const handleClose = (value) => {
+  const handleClose = () => {
     setOpen(false)
   }
   const handleChange = (event) => {
@@ -87,7 +88,7 @@ export default forwardRef(function Card(props, ref) {
   const [offerPrice, setOfferPrice] = useState('')
   const [lendPrice, setLendPrice] = useState('')
   const { showBuyOrSellButton, history, onClose, item } = props
-  const [isBuyDirectly, setIsBuyDirectly] = useState(item.minPrice === item.price)
+  const [isBuyDirectly, setIsBuyDirectly] = useState(item.minPrice === item.price && item.seller !== undefined)
   const account = useSelector((state) => state.provider.account) ?? ''
   const onBuy = useBuyNft()
   const onOffer = useMakeOffer()
@@ -95,7 +96,7 @@ export default forwardRef(function Card(props, ref) {
   const onLevelUp = useLevelUp()
   const onCreateLend = useCreateLend()
   const { isApprove, onApprove } = useApproveAll()
-  const histories = item.sellHistories
+  const sellHistories = item.sellHistories
   const chainId = useSelector((state) => state.provider.chainId)
   const onCancelMarketItem = useCancelMarketItem()
   const onCancelMarketItemAuction = useCancelMarketItemAuction()
@@ -116,6 +117,7 @@ export default forwardRef(function Card(props, ref) {
   if (offers && offers.length > 0) {
     isLatestOffer = offers[0].asker.toLowerCase() === account.toLowerCase()
   }
+  
   const icon =
     item.class === 1 ? (
       <Beast />
@@ -387,7 +389,7 @@ export default forwardRef(function Card(props, ref) {
               }}
             />
           ) : null}
-          {showBuyOrSellButton && !isOwner && !isBuyDirectly && (item.currentPrice > 0 || offers.length > 0) ? (
+          {showBuyOrSellButton && !isOwner && !isBuyDirectly && (item.currentPrice > 0 || offers?.length > 0) ? (
             <div>
               <br />
               <Button variant="outlined" onClick={handleClickOpen}>
@@ -449,6 +451,26 @@ export default forwardRef(function Card(props, ref) {
             disabled={item.remainBlock <= 0 && !isBuyDirectly}
             onClick={() => {
               onClose && onClose()
+              if (!isBuyDirectly) {
+                onOffer(item, offerPrice)
+                return
+              }
+              if (isBuyDirectly) {
+                onBuy(item)
+                return
+              }
+            }}
+          >
+            {(isBuyDirectly ? t('Buy Directly') : t('Make Offer'))}
+          </StyledButton>
+        )}
+        {account && showBuyOrSellButton && !isMySell && isApprove && !isEndAuction && (
+          <StyledButton
+            variant="contained"
+            style={{ margin: '8px 0' }}
+            disabled={item.remainBlock <= 0 && !isBuyDirectly}
+            onClick={() => {
+              onClose && onClose()
               if (isSell && isApprove && option === 2) {
                 if (!minSellPrice || !maxSellPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
@@ -486,14 +508,6 @@ export default forwardRef(function Card(props, ref) {
                 onCreateLend(item.tokenId,lendPrice, blockDuration)
                 return
               }
-              if (!isBuyDirectly) {
-                onOffer(item, offerPrice)
-                return
-              }
-              if (isBuyDirectly) {
-                onBuy(item)
-                return
-              }
             }}
           >
             {isSell && isApprove && option !==3? t('Sell') : isSell && isApprove ? t('Up for rent')  : isBuyDirectly ? t('Buy Directly') : !isEndAuction ? t('Make Offer') : null}
@@ -520,8 +534,8 @@ export default forwardRef(function Card(props, ref) {
             </Typography>
           </Box>
           <Box marginTop="8px" flex={1}>
-            {histories?.length ? (
-              histories.map((item, index) => {
+            {sellHistories?.length ? (
+              sellHistories.map((item, index) => {
                 return (
                   <Box display="flex" justifyContent="space-between">
                     <MI.CopyAllSharp
@@ -540,13 +554,15 @@ export default forwardRef(function Card(props, ref) {
                       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
                     />
                     <i
-                      class="fas fa-external-link-alt"
+                      className="fas fa-external-link-alt"
                       style={{
                         color: '#c23a3a',
                         cursor: 'pointer',
-                        visibility: getTxSuccess()[item.itemMarketId] ? 'unset' : 'hidden',
+                        visibility: item.transactionHash ? 'unset' : 'hidden',
                       }}
-                      onClick={() => inforTx(chainId, item.itemMarketId)}
+                      onClick={() => 
+                        window.open(EXPLORER_TX[chainId] + item.transactionHash)
+                        }
                     />
                   </Box>
                 )

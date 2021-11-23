@@ -26,9 +26,8 @@ const useSellHistories = (tokenId) => {
               price: ethers.utils.formatUnits(i.price.toString(), 'ether'),
               timestamp,
               time: moment.unix(timestamp).fromNow(),
-              itemMarketId: i.itemMarketId.toNumber()
-              
-
+              itemMarketId: i.itemMarketId.toNumber(),
+              transactionHash: i.transactionHash.toString()
             }
             return item
           }),

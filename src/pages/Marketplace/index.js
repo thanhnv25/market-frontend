@@ -64,7 +64,6 @@ export default function Marketplace() {
   const block = useBlock()
 
   const listNftIsListing = useListNftInListing()
-  //const listNftIsMyBought = useListNftMyBought()
   const [pageCount, setPageCount] = useState(0)
   const [itemOffset, setItemOffset] = useState(0)
   const [currentItems, setCurrentItems] = useState([])
@@ -114,18 +113,7 @@ export default function Marketplace() {
     const endOffset = itemOffset + itemsPerPage
     setPageCount(Math.ceil(result.length / itemsPerPage))
     setCurrentItems(result.slice(itemOffset, endOffset))
-  }, [
-    account,
-    chainId,
-    filterByClassify,
-    filterByOrderType,
-    listNftIsListing,
-   // listNftIsMyBought,
-    search,
-    sortBy,
-    itemOffset,
-    itemsPerPage,
-  ])
+  }, [account, chainId, filterByClassify, filterByOrderType, listNftIsListing, search, sortBy, itemOffset, itemsPerPage, block])
 
   const onCloseModal = () => {
     setOpenModal(false)
