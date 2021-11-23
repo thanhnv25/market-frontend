@@ -10,13 +10,14 @@ import useBlock from '../hooks/useBlock'
 import useCancelLend from '../hooks/useCancelLend'
 import useRetrieveLend from '../hooks/useRetrieveLend'
 import useBorrow from '../hooks/useBorrow'
+import { EXPLORER_TX } from '../constants/index'
 
 import { connectWallet } from '../utils'
 import { ReactComponent as Beast } from '../assets/beast.svg'
 import { ReactComponent as Plant } from '../assets/plant.svg'
 import { ReactComponent as Mech } from '../assets/mech.svg'
 import { ReactComponent as Bug } from '../assets/bug.svg'
-import { copyBuyer, inforTx, getTxSuccess, blockRemains } from '../utils/index'
+import { copyBuyer, blockRemains } from '../utils/index'
 const StyledCard = styled(Box)`
   height: 340px;
   width: 225px;
@@ -250,8 +251,8 @@ console.log(item)
                         {item.price} ETH ({item.time})
                       </Typography>
                       <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
-                      <i class="fas fa-external-link-alt" style={{ color: "#c23a3a", cursor: "pointer", visibility: getTxSuccess()[item.itemMarketId] ? 'unset' : 'hidden' }}
-                        onClick={() => inforTx(chainId, item.itemMarketId)}
+                      <i class="fas fa-external-link-alt" style={{ color: "#c23a3a", cursor: "pointer", visibility: item.transactionHash ? 'unset' : 'hidden' }}
+                        onClick={() => window.open(EXPLORER_TX[chainId] + item.transactionHash)}
                       />
                     </Box>
                   )
