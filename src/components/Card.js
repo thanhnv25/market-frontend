@@ -73,7 +73,7 @@ export default forwardRef(function Card(props, ref) {
     setOpen(true)
   }
 
-  const handleClose = (value) => {
+  const handleClose = () => {
     setOpen(false)
   }
   const { t } = useTranslation()
@@ -82,7 +82,7 @@ export default forwardRef(function Card(props, ref) {
   const [maxSellPrice, setMaxSellPrice] = useState('')
   const [offerPrice, setOfferPrice] = useState('')
   const { showBuyOrSellButton, history, onClose, item } = props
-  const [isBuyDirectly, setIsBuyDirectly] = useState(item.minPrice === item.price)
+  const [isBuyDirectly, setIsBuyDirectly] = useState(item.minPrice === item.price && item.seller !== undefined)
   const account = useSelector((state) => state.provider.account) ?? ''
   const onBuy = useBuyNft()
   const onOffer = useMakeOffer()
@@ -106,16 +106,6 @@ export default forwardRef(function Card(props, ref) {
   let isLatestOffer = false
   if (offers && offers.length > 0) {
     isLatestOffer = offers[0].asker.toLowerCase() === account.toLowerCase()
-  }
-  function secondsToHms(d) {
-    d = Number(d)
-    if (d <= 0) return 0
-    var h = Math.floor(d / 3600)
-    var m = Math.floor((d % 3600) / 60)
-
-    var hDisplay = h > 0 ? h + (h === 1 ? ' hour, ' : ' hours, ') : ''
-    var mDisplay = m > 0 ? m + (m === 1 ? ' minute ' : ' minutes ') : ''
-    return hDisplay + mDisplay
   }
   
   const icon =
@@ -317,7 +307,7 @@ export default forwardRef(function Card(props, ref) {
               }}
             />
           ) : null}
-          {showBuyOrSellButton && !isOwner && !isBuyDirectly && (item.currentPrice > 0 || offers.length > 0) ? (
+          {showBuyOrSellButton && !isOwner && !isBuyDirectly && (item.currentPrice > 0 || offers?.length > 0) ? (
             <div>
               <br />
               <Button variant="outlined" onClick={handleClickOpen}>
@@ -372,14 +362,34 @@ export default forwardRef(function Card(props, ref) {
             {t('Claim')}
           </StyledButton>
         )}
-        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && !isEndAuction && (
+        {account && showBuyOrSellButton && !isMySell && isBuyDirectly && !isOwner && !isEndAuction && (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
             disabled={item.remainBlock <= 0 && !isBuyDirectly}
             onClick={() => {
               onClose && onClose()
-              if (isSell && isApprove) {
+              if (!isBuyDirectly) {
+                onOffer(item, offerPrice)
+                return
+              }
+              if (isBuyDirectly) {
+                onBuy(item)
+                return
+              }
+            }}
+          >
+            {(isBuyDirectly ? t('Buy Directly') : t('Make Offer'))}
+          </StyledButton>
+        )}
+        {account && showBuyOrSellButton && !isMySell && isApprove && !isEndAuction && (
+          <StyledButton
+            variant="contained"
+            style={{ margin: '8px 0' }}
+            disabled={item.remainBlock <= 0 && !isBuyDirectly}
+            onClick={() => {
+              onClose && onClose()
+              if (isSell) {
                 if (!minSellPrice || !maxSellPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
@@ -396,17 +406,9 @@ export default forwardRef(function Card(props, ref) {
                 onSell(item, minSellPrice, maxSellPrice, blockNumber)
                 return
               }
-              if (!isBuyDirectly) {
-                onOffer(item, offerPrice)
-                return
-              }
-              if (isBuyDirectly) {
-                onBuy(item)
-                return
-              }
             }}
           >
-            {isSell && isApprove ? t('Sell') : isBuyDirectly ? t('Buy Directly') : t('Make Offer')}
+            {isSell && isApprove && !isBuyDirectly &&  t('Sell')}
           </StyledButton>
         )}
       </Box>
@@ -450,7 +452,7 @@ export default forwardRef(function Card(props, ref) {
                       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
                     />
                     <i
-                      class="fas fa-external-link-alt"
+                      className="fas fa-external-link-alt"
                       style={{
                         color: '#c23a3a',
                         cursor: 'pointer',

@@ -12,12 +12,14 @@ const useListNftInListing = () => {
   const socket = window.socket
 
   useEffect(() => {
-    if (socket) {
-      socket.on('NeedUpdateData', (timestamp) => {
-        console.log('socket::>>', timestamp)
-        setTimestamp(timestamp)
-      })
+    const onHandleSocket = (timestampFromEvent) => {
+        console.log('socket::>>', timestampFromEvent)
+        setTimestamp(timestampFromEvent)
     }
+    if (socket) {
+        socket.on('NeedUpdateData', onHandleSocket)
+    }
+    return () => socket && socket.off('NeedUpdateData')
   }, [socket])
 
   const fetchData = useCallback(async (boundBlock) => {
