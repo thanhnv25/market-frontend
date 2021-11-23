@@ -102,11 +102,6 @@ export default forwardRef(function Card(props, ref) {
   const isOwner = item.buyer!==undefined && item.buyer.toLowerCase() === account.toLowerCase()
   const [blockNumber, setBlockNumber] = useState(0)
   var currentdate = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0]
-<<<<<<< HEAD
-  const isLatestOffer = offers?.length? offers[0].asker.toLowerCase() === account.toLowerCase() : false
-  if (offers && offers.length > 0) {
-    isLatestOffer = offers[0].asker.toLowerCase() === account.toLowerCase()
-=======
   let isLatestOffer = false
   if (offers && offers.length > 0) {
     isLatestOffer = offers[0].asker.toLowerCase() === account.toLowerCase()
@@ -120,7 +115,6 @@ export default forwardRef(function Card(props, ref) {
     var hDisplay = h > 0 ? h + (h === 1 ? ' hour, ' : ' hours, ') : ''
     var mDisplay = m > 0 ? m + (m === 1 ? ' minute ' : ' minutes ') : ''
     return hDisplay + mDisplay
->>>>>>> develop
   }
   
   const icon =
