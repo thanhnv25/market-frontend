@@ -9,7 +9,7 @@ import { ClassItem, OWNER_NFT } from '../../constants/index'
 import useCreateToken from '../../hooks/useCreateToken'
 import useAlertCallback from '../../hooks/useAlertCallback'
 import { useSelector } from 'react-redux'
-import { connectWallet, timeToBlockNumber} from '../../utils'
+import { connectWallet, timeToBlockNumber } from '../../utils'
 const Container = styled.div`
   display: flex;
   flex-direction: column;
@@ -47,55 +47,56 @@ const Heading = styled.h1`
     }
   }
 `
-export const CssTimeTextField = styled(TextField, {})(
-  ({ value, unit, width, myBackgroundColor, myColor }) => ({
-    width: width,
-    '& input': {
+export const CssTimeTextField = styled(
+  TextField,
+  {},
+)(({ value, unit, width, myBackgroundColor, myColor }) => ({
+  width: width,
+  '& input': {
+    color: myBackgroundColor ?? '#ffeedd',
+  },
+  '& label': {
+    color: myColor ?? '#decbbd',
+    display: value ? 'block' : 'flex',
+    justifyContent: 'left',
+    width: '100%',
+  },
+  '&:hover': {
+    label: {
       color: myBackgroundColor ?? '#ffeedd',
     },
-    '& label': {
-      color: myColor ?? '#decbbd',
-      display: value ? 'block' : 'flex',
-      justifyContent: 'left',
-      width: '100%',
+  },
+  '& label.Mui-focused': {
+    color: myBackgroundColor ?? '#ffeedd',
+    display: 'block',
+  },
+  '& .MuiInput-underline:after': {
+    borderBottomColor: myBackgroundColor ?? '#ffeedd',
+  },
+  '& .MuiOutlinedInput-root': {
+    borderRadius: '20px',
+    '& fieldset': {
+      borderColor: myColor ?? '#decbbd',
     },
-    '&:hover': {
-      label: {
-        color: myBackgroundColor ?? '#ffeedd',
-      },
+    '&:hover fieldset': {
+      borderColor: myBackgroundColor ?? '#ffeedd',
     },
-    '& label.Mui-focused': {
-      color: myBackgroundColor ?? '#ffeedd',
-      display: 'block',
+    '&.Mui-focused fieldset': {
+      borderColor: myBackgroundColor ?? '#ffeedd',
     },
-    '& .MuiInput-underline:after': {
-      borderBottomColor: myBackgroundColor ?? '#ffeedd',
-    },
-    '& .MuiOutlinedInput-root': {
-      borderRadius: '20px',
-      '& fieldset': {
-        borderColor: myColor ?? '#decbbd',
-      },
-      '&:hover fieldset': {
-        borderColor: myBackgroundColor ?? '#ffeedd',
-      },
-      '&.Mui-focused fieldset': {
-        borderColor: myBackgroundColor ?? '#ffeedd',
-      },
-    },
-    '&::after': {
-      content: value && unit ? "'" + unit + "'" : "''",
-      position: 'absolute',
-      top: 0,
-      padding: 0,
-      margin: 0,
-      right: '16px',
-      display: 'flex',
-      alignItems: 'center',
-      height: '100%',
-    },
-  }),
-)
+  },
+  '&::after': {
+    content: value && unit ? "'" + unit + "'" : "''",
+    position: 'absolute',
+    top: 0,
+    padding: 0,
+    margin: 0,
+    right: '16px',
+    display: 'flex',
+    alignItems: 'center',
+    height: '100%',
+  },
+}))
 export const CssTextField = styled(TextField, { shouldForwardProp: isPropValid })(
   ({ value, unit, width, myBackgroundColor, myColor }) => ({
     width: width,
@@ -230,7 +231,11 @@ export default function Create() {
   var currentdate = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0]
   const account = useSelector((state) => state.provider.account) ?? ''
   const [isOwner, setIsOwner] = useState(false)
-  
+  const [option, setOption] = useState(1)
+  const handleChange = (event) => {
+    setOption(event.target.value)
+  }
+
   useEffect(() => {
     setIsOwner(account === OWNER_NFT[chainId])
   }, [account, chainId])
@@ -247,6 +252,15 @@ export default function Create() {
             </span>
           ))}
       </Heading>
+      <Box style={{ borderColor: '#decbbd' }} sx={{ minWidth: 120 }}>
+        <FormControl style={{ borderColor: '#decbbd' }} fullWidth>
+          <InputLabel style={{ color: '#decbbd' }}>Action</InputLabel>
+          <StyledSelect style={{ color: '#decbbd' }} width="20vw" value={option} label="Action" onChange={handleChange}>
+            <MenuItem value={1}>Create Item</MenuItem>
+            <MenuItem value={2}>Create Auction</MenuItem>
+          </StyledSelect>
+        </FormControl>
+      </Box>
       <CssTextField
         width="20vw"
         label={t('Url Image')}
@@ -254,26 +268,42 @@ export default function Create() {
         value={urlImage}
         onChange={(e) => setUrlImage(e.target.value)}
       />
-      <Box width="20vw" display="flex" justifyContent="space-between">
+      {option == 1 && (
         <CssTextField
-          width="9vw"
+          width="20vw"
           unit="ETH"
           type="number"
-          label={t('Min Price')}
-          variant="outlined"
-          value={minPrice}
-          onChange={(e) => setMinPrice(e.target.value)}
-        />
-        <CssTextField
-          width="9vw"
-          unit="ETH"
-          type="number"
-          label={t('Max Price')}
+          label={t('Price')}
           variant="outlined"
           value={maxPrice}
-          onChange={(e) => setMaxPrice(e.target.value)}
+          onChange={(e) => {
+            setMinPrice(e.target.value)
+            setMaxPrice(e.target.value)
+          }}
         />
-      </Box>
+      )}
+      {option == 2 && (
+        <Box width="20vw" display="flex" justifyContent="space-between">
+          <CssTextField
+            width="9vw"
+            unit="ETH"
+            type="number"
+            label={t('Min Price')}
+            variant="outlined"
+            value={minPrice}
+            onChange={(e) => setMinPrice(e.target.value)}
+          />
+          <CssTextField
+            width="9vw"
+            unit="ETH"
+            type="number"
+            label={t('Max Price')}
+            variant="outlined"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(e.target.value)}
+          />
+        </Box>
+      )}
 
       <StyledFormControl width="20vw" value={classify}>
         <InputLabel style={{ color: '#decbbd' }}>{t('Class')}</InputLabel>
@@ -287,27 +317,30 @@ export default function Create() {
           })}
         </StyledSelect>
       </StyledFormControl>
-      <Box width="20vw" display="flex" justifyContent="space-between">
-        <CssTimeTextField
-          id="datetime-local"
-          label="Auction close"
-          type="datetime-local"
-
-          inputProps={{
-            min: currentdate
-          }}
-          defaultValue={currentdate}
-          sx={{ width: 250 }}
-          InputLabelProps={{
-            shrink: true,
-          }}
-          width="20vw"
-          onChange={(e) => setBlockNumber(timeToBlockNumber(e.target.value,chainId))}
-        />
-      </Box>
-      <Typography color={blockNumber >= 10 ? "#decbbd" : "#c23a3a"} width="20vw" fontSize="12px" fontWeight={400}>
-        {t("Number of block to close: ") + blockNumber}
-      </Typography>
+      {option == 2 && (
+        <Box width="20vw" display="flex" justifyContent="space-between">
+          <CssTimeTextField
+            id="datetime-local"
+            label="Auction close"
+            type="datetime-local"
+            inputProps={{
+              min: currentdate,
+            }}
+            defaultValue={currentdate}
+            sx={{ width: 250 }}
+            InputLabelProps={{
+              shrink: true,
+            }}
+            width="20vw"
+            onChange={(e) => setBlockNumber(timeToBlockNumber(e.target.value, chainId))}
+          />
+        </Box>
+      )}
+      {option == 2 && (
+        <Typography color={blockNumber >= 10 ? '#decbbd' : '#c23a3a'} width="20vw" fontSize="12px" fontWeight={400}>
+          {t('Number of block to close: ') + blockNumber}
+        </Typography>
+      )}
       <Box width="20vw" display="flex" justifyContent="space-between">
         <Box
           display="flex"
@@ -385,11 +418,11 @@ export default function Create() {
           {t('Connect Metamask')}
         </StyledButton>
       ) : !isOwner ? (
-        <StyledButton variant="contained" disabled="true" style={{ margin: '8px 0' }} >
+        <StyledButton variant="contained" disabled="true" style={{ margin: '8px 0' }}>
           {t('Need to switch to admin wallet')}
         </StyledButton>
-      ) :
-        (<StyledButton
+      ) : (
+        <StyledButton
           variant="primary"
           onClick={() => {
             if (!urlImage || !minPrice || !maxPrice || !classify) {
@@ -408,19 +441,18 @@ export default function Create() {
               alertMessage(t('Error'), t('Max price must greater than min price'), 'error')
               return
             }
-            if (blockNumber < 10) {
+            if (blockNumber < 10 && option == 2) {
               alertMessage(t('Error'), t('Number of block must >= 10 '), 'error')
               return
             }
             setTxPending(true)
-            onCreateToken(urlImage, minPrice, maxPrice, classify, stats, blockNumber)
+            onCreateToken(urlImage, minPrice, maxPrice, classify, stats, blockNumber, option)
             setTxPending(false)
           }}
         >
           {txPending ? t('Creating') : t('Create')}
-        </StyledButton>)
-      }
-
+        </StyledButton>
+      )}
     </Container>
   )
 }
