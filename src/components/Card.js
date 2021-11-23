@@ -22,7 +22,8 @@ import { ReactComponent as Bug } from '../assets/bug.svg'
 import useCancelMarketItem from '../hooks/useCancelMarketItem'
 import useCancelMarketItemAuction from '../hooks/useCancelMarketItemAuction'
 import useLevelUp from '../hooks/useLevelUp'
-import { copyBuyer, inforTx, getTxSuccess, blockRemains } from '../utils/index'
+import { copyBuyer, blockRemains } from '../utils/index'
+import { EXPLORER_TX } from '../constants/index'
 const StyledCard = styled(Box)`
   height: 340px;
   width: 225px;
@@ -89,7 +90,7 @@ export default forwardRef(function Card(props, ref) {
   const onSell = useSellNft()
   const onLevelUp = useLevelUp()
   const { isApprove, onApprove } = useApproveAll()
-  const histories = item.sellHistories
+  const sellHistories = item.sellHistories
   const chainId = useSelector((state) => state.provider.chainId)
   const onCancelMarketItem = useCancelMarketItem()
   const onCancelMarketItemAuction = useCancelMarketItemAuction()
@@ -432,8 +433,8 @@ export default forwardRef(function Card(props, ref) {
             </Typography>
           </Box>
           <Box marginTop="8px" flex={1}>
-            {histories?.length ? (
-              histories.map((item) => {
+            {sellHistories?.length ? (
+              sellHistories.map((item, index) => {
                 return (
                   <Box display="flex" justifyContent="space-between">
                     <MI.CopyAllSharp
@@ -452,13 +453,15 @@ export default forwardRef(function Card(props, ref) {
                       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
                     />
                     <i
-                      class="fas fa-external-link-alt"
+                      className="fas fa-external-link-alt"
                       style={{
                         color: '#c23a3a',
                         cursor: 'pointer',
-                        visibility: getTxSuccess()[item.itemMarketId] ? 'unset' : 'hidden',
+                        visibility: item.transactionHash ? 'unset' : 'hidden',
                       }}
-                      onClick={() => inforTx(chainId, item.itemMarketId)}
+                      onClick={() => 
+                        window.open(EXPLORER_TX[chainId] + item.transactionHash)
+                        }
                     />
                   </Box>
                 )
