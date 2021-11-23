@@ -79,7 +79,8 @@ const useListNftInListing = () => {
       }
       return item
     })
-    setList(data)
+    return data
+
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
   useEffect(() => {
