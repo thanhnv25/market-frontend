@@ -29,7 +29,8 @@ const useListNftMyBought = () => {
         morale: marketItem.morale.toString(),
         skill: marketItem.skill.toString(),
         speed: marketItem.speed.toString(),
-        buyer: marketItem.buyer? marketItem.buyer : ''
+        buyer: marketItem.buyer? marketItem.buyer : '',
+        owner: marketItem.owner.toString(),
       }
       return item
     })
