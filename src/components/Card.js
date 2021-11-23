@@ -231,13 +231,11 @@ export default forwardRef(function Card(props, ref) {
               <Typography fontSize="14px" color="#90b8ef" fontWeight={400}>
                 {item.remainBlock <= 0 ? t('Auction ended') : t('Auction end at block: ') + item.endBlock}
               </Typography>
-              {!isEndAuction && (
                 <MI.AccessAlarms
                   onClick={() => blockRemains(chainId, item.endBlock)}
                   fontSize="small"
                   style={{ fill: '#c23a3a', cursor: 'pointer' }}
                 />
-              )}
             </Box>
           ) : null}
           {showBuyOrSellButton && isSell && isApprove && option === 2 ? (
