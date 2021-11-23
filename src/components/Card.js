@@ -117,7 +117,7 @@ export default forwardRef(function Card(props, ref) {
   if (offers && offers.length > 0) {
     isLatestOffer = offers[0].asker.toLowerCase() === account.toLowerCase()
   }
-  
+  console.log(item);
   const icon =
     item.class === 1 ? (
       <Beast />
@@ -442,26 +442,6 @@ export default forwardRef(function Card(props, ref) {
             {t('Claim')}
           </StyledButton>
         )}
-        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove)  && (
-          <StyledButton
-            variant="contained"
-            style={{ margin: '8px 0' }}
-            disabled={item.remainBlock <= 0 && !isBuyDirectly}
-            onClick={() => {
-              onClose && onClose()
-              if (!isBuyDirectly) {
-                onOffer(item, offerPrice)
-                return
-              }
-              if (isBuyDirectly) {
-                onBuy(item)
-                return
-              }
-            }}
-          >
-            {(isBuyDirectly ? t('Buy Directly') : t('Make Offer'))}
-          </StyledButton>
-        )}
         {account && showBuyOrSellButton && !isMySell && isApprove && !isEndAuction && (
           <StyledButton
             variant="contained"
@@ -504,6 +484,14 @@ export default forwardRef(function Card(props, ref) {
                   alertMessage(t('Error'), t('Lend price must greater than 0'), 'error')
                 }
                 onCreateLend(item.tokenId,lendPrice, blockDuration)
+                return
+              }
+              if (!isBuyDirectly) {
+                onOffer(item, offerPrice)
+                return
+              }
+              if (isBuyDirectly) {
+                onBuy(item)
                 return
               }
             }}
