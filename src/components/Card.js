@@ -82,7 +82,6 @@ export default forwardRef(function Card(props, ref) {
   const [maxSellPrice, setMaxSellPrice] = useState('')
   const [offerPrice, setOfferPrice] = useState('')
   const { showBuyOrSellButton, history, onClose, item } = props
-  if(item.tokenId==45) console.log('item::>>', item)
   const [isBuyDirectly, setIsBuyDirectly] = useState(item.minPrice === item.price && item.seller !== undefined)
   const account = useSelector((state) => state.provider.account) ?? ''
   const onBuy = useBuyNft()

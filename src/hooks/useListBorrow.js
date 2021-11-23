@@ -12,17 +12,17 @@ const useListBorrow = (res) => {
     const socket = window.socket
 
     useEffect(() => {
-        if (socket) {
-            socket.on('NeedUpdateData', (timestamp) => {
-                console.log('socket::>>', timestamp)
-                setTimestamp(timestamp)
-            })
+        const onHandleSocket = (timestampFromEvent) => {
+            console.log('socket::>>', timestampFromEvent)
+            setTimestamp(timestampFromEvent)
         }
+        if (socket) {
+            socket.on('NeedUpdateData', onHandleSocket)
+        }
+        return () => socket && socket.off('NeedUpdateData')
     }, [socket])
 
     const fetchData = useCallback(async (account) => {
-        console.log(`${process.env.REACT_APP_API_URL}/lend-items/borrow/${account}`)
-
         const availableItem = await axios.get(`${process.env.REACT_APP_API_URL}/lend-items/borrow/${account}`)
         // get list lend
         const listItems = await availableItem.data
