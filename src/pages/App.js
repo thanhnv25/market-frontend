@@ -20,7 +20,15 @@ function App() {
   const { pathname } = useLocation()
   const history = useHistory()
   const activeIndex =
-    pathname === '/marketplace' ? 0 : pathname === '/create' ? 3 : pathname === '/mynft' ? 1 : pathname === '/lending' ? 2 : undefined
+    pathname === '/marketplace'
+      ? 0
+      : pathname === '/create'
+      ? 3
+      : pathname === '/mynft'
+      ? 1
+      : pathname === '/lending'
+      ? 2
+      : undefined
   const { t } = useTranslation()
   const [language, toggleLanguage] = useLanguage()
   const [socketIO, setSocketIO] = useState()
@@ -65,7 +73,7 @@ function App() {
             </div>
           ) : (
             <div tabIndex="0" className="account" onClick={connectWallet}>
-              {t('Connect Metamask')}
+              {t('Connect Metamask (Rinkeby)')}
             </div>
           )}
         </div>

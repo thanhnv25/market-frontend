@@ -4,12 +4,11 @@ import { useCallback, useEffect, useState } from 'react'
 import useBlock from './useBlock'
 import moment from 'moment'
 
-const useListLend = (bound) => {
+const useListMyLend = (address) => {
     const [list, setList] = useState([])
     const [timestamp, setTimestamp] = useState([])
-    const block = useBlock()
-
     const socket = window.socket
+    const block = useBlock()
 
     useEffect(() => {
         const onHandleSocket = (timestampFromEvent) => {
@@ -22,17 +21,15 @@ const useListLend = (bound) => {
         return () => socket && socket.off('NeedUpdateData')
     }, [socket])
 
-    const fetchData = useCallback(async (boundBlock, currentBlock) => {
-        if (boundBlock === undefined) {
-            boundBlock = Number.MAX_SAFE_INTEGER
-        }
-        const availableItem = await axios.get(`${process.env.REACT_APP_API_URL}/lend-items/avail-lend/${boundBlock}`)
-        // get list lend
+    const fetchData = useCallback(async (account,currenBlock) => {
+        const availableItem = await axios.get(`${process.env.REACT_APP_API_URL}/lend-items/my-lend/${account}`)
+        console.log(`${process.env.REACT_APP_API_URL}/lend-items/my-lend/${account}`);
         const listItems = await availableItem.data
+        console.log(listItems);
         const data = await Promise.all(
             listItems.lendItems.map(async (i) => {
                 let blockEnd = i.lendBlockDuration
-                let remainBlock = blockEnd - currentBlock
+                let remainBlock = blockEnd - currenBlock
                 const lendHistories = await Promise.all(
                     i.nft.lendHistories.map(async (history) => {
 
@@ -76,12 +73,12 @@ const useListLend = (bound) => {
     }, [])
     useEffect(() => {
         ; (async () => {
-            const data = await fetchData(bound, block)
+            const data = await fetchData(address, block)
             setList(data)
             return true
         })()
-    }, [fetchData, timestamp, bound, block])
+    }, [fetchData, timestamp, address, block])
     return list
 }
 
-export default useListLend
+export default useListMyLend

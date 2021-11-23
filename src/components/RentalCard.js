@@ -62,7 +62,6 @@ const StyledButton = styled(Button)`
 
 export default forwardRef(function Card(props, ref) {
   const [open, setOpen] = useState(false)
-
   const { t } = useTranslation()
   const alertMessage = useAlertCallback()
   const { showBuyOrSellButton, history, onClose, item } = props
@@ -74,6 +73,8 @@ export default forwardRef(function Card(props, ref) {
   const onBorrow = useBorrow()
   const isBorrowed = item.borrower !== '0x0000000000000000000000000000000000000000'
   const isLender = item.lender.toLowerCase() === account.toLowerCase()
+console.log(item)
+
   const icon =
     item.class === 1 ? (
       <Beast />
@@ -151,7 +152,7 @@ export default forwardRef(function Card(props, ref) {
                 {item.remainBlock <= 0 ? t('Rental sesstion ended') : t('Rental end at block: ') + item.lendBlockDuration}
               </Typography>
               <MI.AccessAlarms
-                onClick={() => blockRemains(chainId, item.endBlock)}
+                onClick={() => blockRemains(chainId, item.lendBlockDuration)}
                 fontSize="small"
                 style={{ fill: '#c23a3a', cursor: 'pointer' }}
               />
@@ -206,7 +207,7 @@ export default forwardRef(function Card(props, ref) {
               onRetrieveLend(item.id)
             }}
           >
-            {t('Claim')}
+            {t('Retrieve')}
           </StyledButton>
         )}
       </Box>

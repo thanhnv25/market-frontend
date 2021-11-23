@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import RentalCard from '../../components/RentalCard'
 import RentalCardModal from '../../components/RentalCardModal'
 import useListLend from '../../hooks/useListLend'
+import useListMyLend from '../../hooks/useListMyLend'
 import useListBorrow from '../../hooks/useListBorrow'
 import { ClassItem, ITEMS_PER_PAGE } from '../../constants'
 import { useSelector } from 'react-redux'
@@ -64,6 +65,7 @@ export default function Marketplace() {
   const block = useBlock()
   const listLend = useListLend(block)
   const listBorrow = useListBorrow(account)
+  const listMyLend = useListMyLend(account)
   const [pageCount, setPageCount] = useState(0)
   const [itemOffset, setItemOffset] = useState(0)
   const [currentItems, setCurrentItems] = useState([])
@@ -74,10 +76,7 @@ export default function Marketplace() {
         result = listLend
         break
       case 'My rental list':
-        result = _.filter(
-          listLend,
-          (item) => item.lender.toLowerCase() === account.toLowerCase()
-        )
+        result = listMyLend
         break
       case 'My borrow list':
          result = listBorrow

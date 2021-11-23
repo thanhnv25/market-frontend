@@ -64,7 +64,6 @@ export default function Marketplace() {
   const block = useBlock()
 
   const listNftIsListing = useListNftInListing()
-  console.log("list: ",listNftIsListing);
   const [pageCount, setPageCount] = useState(0)
   const [itemOffset, setItemOffset] = useState(0)
   const [currentItems, setCurrentItems] = useState([])
