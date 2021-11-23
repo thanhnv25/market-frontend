@@ -44,7 +44,8 @@ const useListNftInListing = () => {
               price: ethers.utils.formatUnits(history.price.toString(), 'ether'),
               timestamp,
               time: moment.unix(timestamp).fromNow(),
-              itemMarketId: history.itemMarketId
+              itemMarketId: history.itemMarketId,
+              transactionHash: history.transactionHash.toString()
             }
             return item
           } )
