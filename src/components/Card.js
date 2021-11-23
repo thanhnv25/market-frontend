@@ -100,7 +100,7 @@ export default forwardRef(function Card(props, ref) {
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
   const isMyNft = item.buyer === undefined && item.seller === undefined
-  const isOwner = item.buyer.toLowerCase() === account.toLowerCase()
+  const isOwner = item.buyer!==undefined && item.buyer.toLowerCase() === account.toLowerCase()
   const [blockNumber, setBlockNumber] = useState(0)
   var currentdate = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0]
   let isLatestOffer = false
@@ -117,6 +117,7 @@ export default forwardRef(function Card(props, ref) {
     var mDisplay = m > 0 ? m + (m === 1 ? ' minute ' : ' minutes ') : ''
     return hDisplay + mDisplay
   }
+  
   const icon =
     item.class === 1 ? (
       <Beast />
