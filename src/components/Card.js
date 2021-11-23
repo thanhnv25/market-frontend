@@ -1,6 +1,6 @@
 import styled from '@emotion/styled'
 import * as MI from '@mui/icons-material'
-import { Box, Button, Switch, Typography } from '@mui/material'
+import { Box, Button, Switch, Typography, FormControl, InputLabel, MenuItem } from '@mui/material'
 import { forwardRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
@@ -10,10 +10,11 @@ import useApproveAll from '../hooks/useApproveAll'
 import useBuyNft from '../hooks/useBuyNft'
 import useMakeOffer from '../hooks/useMakeOffer'
 import useSellNft from '../hooks/useSellNft'
+import useCreateLend from '../hooks/useCreateLend'
 import useClaimReward from '../hooks/useClaimReward'
 import useBlock from '../hooks/useBlock'
 import OfferDialog from './OfferDialog'
-import { CssTextField, CssTimeTextField } from '../pages/Create'
+import { CssTextField, CssTimeTextField, StyledSelect } from '../pages/Create'
 import { connectWallet, timeToBlockNumber } from '../utils'
 import { ReactComponent as Beast } from '../assets/beast.svg'
 import { ReactComponent as Plant } from '../assets/plant.svg'
@@ -76,11 +77,16 @@ export default forwardRef(function Card(props, ref) {
   const handleClose = () => {
     setOpen(false)
   }
+  const handleChange = (event) => {
+    setOption(event.target.value)
+  }
   const { t } = useTranslation()
   const alertMessage = useAlertCallback()
   const [minSellPrice, setMinSellPrice] = useState('')
   const [maxSellPrice, setMaxSellPrice] = useState('')
+  const [sellPrice, setSellPrice] = useState('')
   const [offerPrice, setOfferPrice] = useState('')
+  const [lendPrice, setLendPrice] = useState('')
   const { showBuyOrSellButton, history, onClose, item } = props
   const [isBuyDirectly, setIsBuyDirectly] = useState(item.minPrice === item.price && item.seller !== undefined)
   const account = useSelector((state) => state.provider.account) ?? ''
@@ -88,6 +94,7 @@ export default forwardRef(function Card(props, ref) {
   const onOffer = useMakeOffer()
   const onSell = useSellNft()
   const onLevelUp = useLevelUp()
+  const onCreateLend = useCreateLend()
   const { isApprove, onApprove } = useApproveAll()
   const sellHistories = item.sellHistories
   const chainId = useSelector((state) => state.provider.chainId)
@@ -95,13 +102,16 @@ export default forwardRef(function Card(props, ref) {
   const onCancelMarketItemAuction = useCancelMarketItemAuction()
   const onClaimReward = useClaimReward()
   const block = useBlock()
+  const [option, setOption] = useState(1)
+
   const isEndAuction = block >= item.endBlock
   const offers = item.offers
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
   const isMyNft = item.buyer === undefined && item.seller === undefined
-  const isOwner = item.buyer!==undefined && item.buyer.toLowerCase() === account.toLowerCase()
+  const isOwner = (item.buyer !== undefined && item.buyer.toLowerCase() === account.toLowerCase()) || (item.owner !== undefined && item.owner.toLowerCase() === account.toLowerCase())
   const [blockNumber, setBlockNumber] = useState(0)
+  const [blockDuration, setBlockDuration] = useState(0)
   var currentdate = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0]
   let isLatestOffer = false
   if (offers && offers.length > 0) {
@@ -193,6 +203,19 @@ export default forwardRef(function Card(props, ref) {
               backgroundImage: `url("${item.image}")`,
             }}
           ></StyledImage>
+          {/* select box */}
+          {showBuyOrSellButton && isOwner &&
+            <Box style={{ borderColor: '#ffffff', marginTop: '20px' }} sx={{ minWidth: 120 }}>
+              <FormControl style={{ borderColor: '#ffffff' }} fullWidth>
+                <InputLabel style={{ color: '#ffffff' }}>Action</InputLabel>
+                <StyledSelect style={{ color: '#ffffff' }} width="20vw" value={option} label="Action" onChange={handleChange}>
+                  <MenuItem value={1}>Sell directly</MenuItem>
+                  <MenuItem value={2}>Create auction</MenuItem>
+                  <MenuItem value={3}>Up for rent</MenuItem>
+                </StyledSelect>
+              </FormControl>
+            </Box>}
+
           {showBuyOrSellButton && !isMySell && !isOwner ? (
             <Switch
               defaultChecked={false}
@@ -203,21 +226,19 @@ export default forwardRef(function Card(props, ref) {
               }}
             />
           ) : null}
-          {showBuyOrSellButton && ((!isSell && !isBuyDirectly) || isMySell) ? (
+          {showBuyOrSellButton && !isBuyDirectly && ((!isSell ) || isMySell) ? (
             <Box display="flex" justifyContent="space-between">
               <Typography fontSize="14px" color="#90b8ef" fontWeight={400}>
                 {item.remainBlock <= 0 ? t('Auction ended') : t('Auction end at block: ') + item.endBlock}
               </Typography>
-              {!isEndAuction && (
                 <MI.AccessAlarms
                   onClick={() => blockRemains(chainId, item.endBlock)}
                   fontSize="small"
                   style={{ fill: '#c23a3a', cursor: 'pointer' }}
                 />
-              )}
             </Box>
           ) : null}
-          {showBuyOrSellButton && isSell && isApprove ? (
+          {showBuyOrSellButton && isSell && isApprove && option === 2 ? (
             <Box>
               <div
                 style={{
@@ -281,7 +302,67 @@ export default forwardRef(function Card(props, ref) {
                 {t('Number of block to close: ') + blockNumber}
               </Typography>
             </Box>
-          ) : !isApprove && isSell ? null : item.minPrice !== item.price ? (
+          ) : (showBuyOrSellButton && isSell && isApprove && option === 1) ? (
+            <Box>
+
+              <CssTextField
+                style={{ marginTop: "20px" }}
+                width="100%"
+                unit="ETH"
+                type="number"
+                label={t('Price')}
+                variant="filled"
+                myBackgroundColor="#ffffff"
+                myColor="#ffffff"
+                value={sellPrice}
+                onChange={(e) => {
+                  setSellPrice(e.target.value)
+                }}
+              />
+
+            </Box>
+          ) : (showBuyOrSellButton && isSell && isApprove && option === 3) ? (
+            <Box>
+              <CssTextField
+                style={{ marginTop: "20px", marginBottom: "20px" }}
+                width="100%"
+                unit="ETH"
+                type="number"
+                label={t('Price')}
+                variant="filled"
+                myBackgroundColor="#ffffff"
+                myColor="#ffffff"
+                value={lendPrice}
+                onChange={(e) => {
+                  setLendPrice(e.target.value)
+                }}
+              />
+              <CssTimeTextField
+                id="datetime-local"
+                label="Auction close"
+                type="datetime-local"
+                style={{ margin: '0 0 12px' }}
+                inputProps={{
+                  min: currentdate,
+                }}
+                defaultValue={currentdate}
+                InputLabelProps={{
+                  shrink: true,
+                }}
+                width="100%"
+                onChange={(e) => setBlockDuration(timeToBlockNumber(e.target.value, chainId))}
+              />
+              <Typography
+                style={{ margin: '0 0 12px' }}
+                color={blockNumber >= 10 ? '#ffffff' : '#c23a3a'}
+                width="100%"
+                fontSize="12px"
+                fontWeight={400}
+              >
+                {t('Number of block to close: ') + blockDuration}
+              </Typography>
+            </Box>
+          ) : (!isApprove && isSell) ? null : (item.minPrice !== item.price) ? (
             <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
               {item.minPrice + ' to ' + item.price + ' ETH'}
             </Typography>
@@ -296,7 +377,6 @@ export default forwardRef(function Card(props, ref) {
               unit="ETH"
               type="number"
               disabled={item.remainBlock <= 0 && !isBuyDirectly}
-              InputProps={{ inputProps: { min: 0, max: 10 } }}
               label={t('Offer amount')}
               variant="filled"
               myBackgroundColor="#ffffff"
@@ -362,7 +442,7 @@ export default forwardRef(function Card(props, ref) {
             {t('Claim')}
           </StyledButton>
         )}
-        {account && showBuyOrSellButton && !isMySell && isBuyDirectly && !isOwner && !isEndAuction && (
+        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove)  && (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
@@ -389,7 +469,7 @@ export default forwardRef(function Card(props, ref) {
             disabled={item.remainBlock <= 0 && !isBuyDirectly}
             onClick={() => {
               onClose && onClose()
-              if (isSell) {
+              if (isSell && isApprove && option === 2) {
                 if (!minSellPrice || !maxSellPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
@@ -403,12 +483,32 @@ export default forwardRef(function Card(props, ref) {
                   alertMessage(t('Error'), t('Number of block must >= 10 '), 'error')
                   return
                 }
-                onSell(item, minSellPrice, maxSellPrice, blockNumber)
+                onSell(item, minSellPrice, maxSellPrice, blockNumber )
+                return
+              }
+              if (isSell && isApprove && option === 1) {
+                if (!sellPrice) {
+                  alertMessage(t('Error'), t('Please fill input'), 'error')
+                } 
+                if (sellPrice && parseFloat(sellPrice) === 0) {
+                  alertMessage(t('Error'), t('Sell price must greater than 0'), 'error')
+                }
+                onSell(item, sellPrice, sellPrice, blockNumber)
+                return
+              }
+              if (isSell && isApprove && option === 3) {
+                if (!lendPrice) {
+                  alertMessage(t('Error'), t('Please fill input'), 'error')
+                } 
+                if (lendPrice && parseFloat(lendPrice) === 0) {
+                  alertMessage(t('Error'), t('Lend price must greater than 0'), 'error')
+                }
+                onCreateLend(item.tokenId,lendPrice, blockDuration)
                 return
               }
             }}
           >
-            {isSell && isApprove && !isBuyDirectly &&  t('Sell')}
+            {isSell && isApprove && option !==3? t('Sell') : isSell && isApprove ? t('Up for rent')  : isBuyDirectly ? t('Buy Directly') : !isEndAuction ? t('Make Offer') : null}
           </StyledButton>
         )}
       </Box>

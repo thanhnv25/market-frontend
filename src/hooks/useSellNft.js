@@ -2,7 +2,7 @@ import { ethers } from 'ethers'
 import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
-import { LISTING_PRICE, NFT_ADDRESS} from '../constants'
+import { LISTING_PRICE, NFT_ADDRESS, BLOCK_NUM_FOR_BUY} from '../constants'
 import { saveTxPending } from '../utils/index'
 import useAlertCallback from './useAlertCallback'
 import useBlock from './useBlock'
@@ -19,6 +19,10 @@ const useSellNft = () => {
     async (item, minPrice, maxPrice, blockNumber) => {
       try {
         if (nftMarketContract && chainId) {
+          if(blockNumber === undefined)
+          {
+            blockNumber =BLOCK_NUM_FOR_BUY
+          }
           minPrice = ethers.utils.parseUnits(minPrice, 'ether')
           maxPrice = ethers.utils.parseUnits(maxPrice, 'ether')
           const blockClose = block + blockNumber
