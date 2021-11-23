@@ -67,7 +67,7 @@ export default function Marketplace() {
   const [pageCount, setPageCount] = useState(0)
   const [itemOffset, setItemOffset] = useState(0)
   const [currentItems, setCurrentItems] = useState([])
-
+  console.log("liost kend",listLend)
   useEffect(() => {
     let result
     switch (filterByOrderType) {
@@ -77,7 +77,7 @@ export default function Marketplace() {
       case 'My rental list':
         result = _.filter(
           listLend,
-          (item) => item.lender.toLowerCase() === account
+          (item) => item.lender.toLowerCase() === account.toLowerCase()
         )
         break
       case 'My borrow list':
