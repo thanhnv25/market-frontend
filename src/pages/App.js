@@ -73,7 +73,7 @@ function App() {
             </div>
           ) : (
             <div tabIndex="0" className="account" onClick={connectWallet}>
-              {t('Connect Metamask')}
+              {t('Connect Metamask (Rinkeby)')}
             </div>
           )}
         </div>
