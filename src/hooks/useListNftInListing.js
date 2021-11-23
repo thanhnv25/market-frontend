@@ -4,11 +4,10 @@ import { useCallback, useEffect, useState } from 'react'
 import useBlock from './useBlock'
 import moment from 'moment'
 
-const useListNftInListing = () => {
+const useListNftInListing = (res) => {
   const [list, setList] = useState([])
   const [timestamp, setTimestamp] = useState([])
   const block = useBlock()
-
   const socket = window.socket
 
   useEffect(() => {
@@ -22,10 +21,12 @@ const useListNftInListing = () => {
     return () => socket && socket.off('NeedUpdateData')
   }, [socket])
 
-  const fetchData = useCallback(async (boundBlock) => {
+  const fetchData = useCallback(async (boundBlock, currentBlock) => {
     if (boundBlock === undefined) {
       boundBlock = Number.MAX_SAFE_INTEGER
     }
+  console.log(block)
+
     const availableItem = await axios.get(`${process.env.REACT_APP_API_URL}/nft-market/items/${boundBlock}`)
     // get list tokens
     const listItems = availableItem.data
@@ -34,7 +35,7 @@ const useListNftInListing = () => {
       let price = ethers.utils.formatUnits(i.maxPrice.toString(), 'ether')
       let currentPrice = ethers.utils.formatUnits(i.currentPrice.toString(), 'ether')
       let blockEnd = i.endBlock
-      let remainBlock = blockEnd - block
+      let remainBlock = blockEnd - currentBlock
       const sellHistories = i.nft.sellHistories.map((history) => {
         const createTime = new Date(history.createdAt)
         const timestamp = createTime.getTime() / 1000
@@ -85,11 +86,11 @@ const useListNftInListing = () => {
   }, [])
   useEffect(() => {
     ;(async () => {
-      const data = await fetchData()
+      const data = await fetchData(res, block)
       setList(data)
       return true
     })()
-  }, [fetchData, timestamp])
+  }, [fetchData, timestamp, block])
   return list
 }
 
