@@ -3,7 +3,6 @@ import useNtfMarketContract from './useNtfMarketContract'
 import useAlertCallback from './useAlertCallback'
 import { useTranslation } from 'react-i18next'
 import { saveTxPending } from '../utils/index'
-import { LISTING_PRICE } from '../constants'
 import { ethers } from 'ethers'
 
 const useBorrow = () => {
@@ -14,9 +13,9 @@ const useBorrow = () => {
   return useCallback(
     async (item) => {
       try {
-
-
-        const borrowTx = await nftMarketContract.borrow(item.id, { value: ethers.utils.parseUnits(item.price.toString(), 'ether').toString() })
+        const borrowTx = await nftMarketContract.borrow(item.id, {
+          value: ethers.utils.parseUnits(item.price.toString(), 'ether').toString(),
+        })
         saveTxPending(borrowTx.hash, t('Borrow lend item #{{id}}.', { id: item.Id }))
         alertMessage(t('Submitted'), t('Borrow lend item submitted'), 'success')
         return true

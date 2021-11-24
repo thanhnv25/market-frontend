@@ -6,7 +6,6 @@ import { useTranslation } from 'react-i18next'
 import { useSelector } from 'react-redux'
 import { ClassItem } from '../constants'
 import useAlertCallback from '../hooks/useAlertCallback'
-import useBlock from '../hooks/useBlock'
 import useCancelLend from '../hooks/useCancelLend'
 import useRetrieveLend from '../hooks/useRetrieveLend'
 import useBorrow from '../hooks/useBorrow'
@@ -17,7 +16,8 @@ import { ReactComponent as Beast } from '../assets/beast.svg'
 import { ReactComponent as Plant } from '../assets/plant.svg'
 import { ReactComponent as Mech } from '../assets/mech.svg'
 import { ReactComponent as Bug } from '../assets/bug.svg'
-import { copyBuyer, blockRemains } from '../utils/index'
+import { blockRemains, copyBuyer } from '../utils/index'
+
 const StyledCard = styled(Box)`
   height: 340px;
   width: 225px;
@@ -73,7 +73,7 @@ export default forwardRef(function Card(props, ref) {
   const onBorrow = useBorrow()
   const isBorrowed = item.borrower !== '0x0000000000000000000000000000000000000000'
   const isLender = item.lender.toLowerCase() === account.toLowerCase()
-console.log(item)
+  console.log(item)
 
   const icon =
     item.class === 1 ? (
@@ -102,9 +102,14 @@ console.log(item)
                 })}
               </Typography>
             </Box>
-            {item.lender !== undefined ? <Typography marginLeft="4px" fontSize="10px" lineHeight="20px">
-              {`Lender: ${item.lender.slice(0, 6)}...${item.lender.slice(item.lender.length - 4, item.lender.length)}`}
-            </Typography> : null}
+            {item.lender !== undefined ? (
+              <Typography marginLeft="4px" fontSize="10px" lineHeight="20px">
+                {`Lender: ${item.lender.slice(0, 6)}...${item.lender.slice(
+                  item.lender.length - 4,
+                  item.lender.length,
+                )}`}
+              </Typography>
+            ) : null}
           </Box>
           <Box>
             <Box display="flex">
@@ -143,13 +148,14 @@ console.log(item)
             style={{
               backgroundImage: `url("${item.image}")`,
             }}
-          ></StyledImage>
+          />
 
           {showBuyOrSellButton && !isBorrowed ? (
-
             <Box display="flex" justifyContent="space-between">
               <Typography fontSize="14px" color="#90b8ef" fontWeight={400}>
-                {item.remainBlock <= 0 ? t('Rental sesstion ended') : t('Rental end at block: ') + item.lendBlockDuration}
+                {item.remainBlock <= 0
+                  ? t('Rental sesstion ended')
+                  : t('Rental end at block: ') + item.lendBlockDuration}
               </Typography>
               <MI.AccessAlarms
                 onClick={() => blockRemains(chainId, item.lendBlockDuration)}
@@ -157,18 +163,12 @@ console.log(item)
                 style={{ fill: '#c23a3a', cursor: 'pointer' }}
               />
             </Box>
-
-
-
           ) : null}
 
           {/* change to lend price */}
           <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
             {item.price === undefined ? null : item.price + ' ETH'}
           </Typography>
-
-
-
         </Box>
         {!account && showBuyOrSellButton && (
           <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={connectWallet}>
@@ -192,6 +192,7 @@ console.log(item)
             variant="contained"
             style={{ margin: '8px 0' }}
             onClick={() => {
+              onClose && onClose()
               onBorrow(item)
             }}
           >
@@ -211,63 +212,76 @@ console.log(item)
           </StyledButton>
         )}
       </Box>
-      {
-        history && (
-          <Box
-            style={{
-              background: '#334756',
-              width: '100%',
-              borderRadius: '0 0 12px 12px',
-              minHeight: '100px',
-              padding: '16px',
-              overflow: 'auto',
-            }}
-          >
-            <Box display="flex" justifyContent="space-between">
-              <Typography fontSize="18px" color="#ffffff" fontWeight={500}>
-                {t('Borrower')}
-              </Typography>
-              <Typography fontSize="18px" color="#ffffff" fontWeight={500}>
-                {t('Price & Time')}
-              </Typography>
-            </Box>
-            <Box marginTop="8px" flex={1}>
-              {histories?.length ? (
-                histories.map((item, index) => {
-                  return (
-                    <Box display="flex" justifyContent="space-between">
-                      <MI.CopyAllSharp
-
-                        onClick={() => copyBuyer(item.borrower)}
-                        fontSize="small"
-                        style={{ fill: '#c23a3a', cursor: 'pointer' }}
-                      />
-                      {item.borrower !== "0x0000000000000000000000000000000000000000" ? (<Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                        {`${item.borrower.slice(0, 6)}...${item.borrower.slice(item.borrower.length - 4, item.borrower.length)}`}
-                      </Typography>) : (<Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                        {`On Rental`}
-                      </Typography>)}
-                      <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                        {item.price} ETH ({item.time})
-                      </Typography>
-                      <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css" />
-                      <i class="fas fa-external-link-alt" style={{ color: "#c23a3a", cursor: "pointer", visibility: item.transactionHash ? 'unset' : 'hidden' }}
-                        onClick={() => window.open(EXPLORER_TX[chainId] + item.transactionHash)}
-                      />
-                    </Box>
-                  )
-                })
-              ) : (
-                <Box display="flex" justifyContent="space-between" textAlign="center">
-                  <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                    {t('No history')}
-                  </Typography>
-                </Box>
-              )}
-            </Box>
+      {history && (
+        <Box
+          style={{
+            background: '#334756',
+            width: '100%',
+            borderRadius: '0 0 12px 12px',
+            minHeight: '100px',
+            padding: '16px',
+            overflow: 'auto',
+          }}
+        >
+          <Box display="flex" justifyContent="space-between">
+            <Typography fontSize="18px" color="#ffffff" fontWeight={500}>
+              {t('Borrower')}
+            </Typography>
+            <Typography fontSize="18px" color="#ffffff" fontWeight={500}>
+              {t('Price & Time')}
+            </Typography>
           </Box>
-        )
-      }
-    </StyledCard >
+          <Box marginTop="8px" flex={1}>
+            {histories?.length ? (
+              histories.map((item, index) => {
+                return (
+                  <Box display="flex" justifyContent="space-between">
+                    <MI.CopyAllSharp
+                      onClick={() => copyBuyer(item.borrower)}
+                      fontSize="small"
+                      style={{ fill: '#c23a3a', cursor: 'pointer' }}
+                    />
+                    {item.borrower !== '0x0000000000000000000000000000000000000000' ? (
+                      <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
+                        {`${item.borrower.slice(0, 6)}...${item.borrower.slice(
+                          item.borrower.length - 4,
+                          item.borrower.length,
+                        )}`}
+                      </Typography>
+                    ) : (
+                      <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
+                        {`On Rental`}
+                      </Typography>
+                    )}
+                    <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
+                      {item.price} ETH ({item.time})
+                    </Typography>
+                    <link
+                      rel="stylesheet"
+                      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
+                    />
+                    <i
+                      class="fas fa-external-link-alt"
+                      style={{
+                        color: '#c23a3a',
+                        cursor: 'pointer',
+                        visibility: item.transactionHash ? 'unset' : 'hidden',
+                      }}
+                      onClick={() => window.open(EXPLORER_TX[chainId] + item.transactionHash)}
+                    />
+                  </Box>
+                )
+              })
+            ) : (
+              <Box display="flex" justifyContent="space-between" textAlign="center">
+                <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
+                  {t('No history')}
+                </Typography>
+              </Box>
+            )}
+          </Box>
+        </Box>
+      )}
+    </StyledCard>
   )
 })

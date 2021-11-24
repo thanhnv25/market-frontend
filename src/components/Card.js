@@ -25,6 +25,7 @@ import useCancelMarketItemAuction from '../hooks/useCancelMarketItemAuction'
 import useLevelUp from '../hooks/useLevelUp'
 import { copyBuyer, blockRemains } from '../utils/index'
 import { EXPLORER_TX } from '../constants/index'
+
 const StyledCard = styled(Box)`
   height: 340px;
   width: 225px;
@@ -106,6 +107,9 @@ export default forwardRef(function Card(props, ref) {
   const [option, setOption] = useState(1)
 
   const isEndAuction = block >= item.endBlock
+  if (item.tokenId === 102) {
+    console.log(`isEndAuction`, isEndAuction)
+  }
   const offers = item.offers
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
@@ -204,7 +208,7 @@ export default forwardRef(function Card(props, ref) {
             style={{
               backgroundImage: `url("${item.image}")`,
             }}
-          ></StyledImage>
+          />
           {/* select box */}
           {showBuyOrSellButton && isOwner && (
             <Box style={{ borderColor: '#ffffff', marginTop: '20px' }} sx={{ minWidth: 120 }}>
@@ -346,7 +350,7 @@ export default forwardRef(function Card(props, ref) {
               />
               <CssTimeTextField
                 id="datetime-local"
-                label={option === 2? "Auction close" : "Rent close"}
+                label={option === 2 ? 'Auction close' : 'Rent close'}
                 type="datetime-local"
                 style={{ margin: '0 0 12px' }}
                 inputProps={{
@@ -414,17 +418,15 @@ export default forwardRef(function Card(props, ref) {
             </Typography>
           ) : null}
         </Box>
-        {!account && showBuyOrSellButton && (
+        {!account && showBuyOrSellButton ? (
           <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={connectWallet}>
             {t('Connect Metamask')}
           </StyledButton>
-        )}
-        {account && !isApprove && showBuyOrSellButton && isSell && (
+        ) : account && !isApprove && showBuyOrSellButton && isSell ? (
           <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={onApprove}>
             {t('Approve NFT')}
           </StyledButton>
-        )}
-        {account && showBuyOrSellButton && isMySell && (
+        ) : account && showBuyOrSellButton && isMySell ? (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
@@ -437,8 +439,7 @@ export default forwardRef(function Card(props, ref) {
           >
             {t('Cancel')}
           </StyledButton>
-        )}
-        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && isLatestOffer && isEndAuction && (
+        ) : account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && isLatestOffer && isEndAuction ? (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
@@ -448,8 +449,7 @@ export default forwardRef(function Card(props, ref) {
           >
             {t('Claim')}
           </StyledButton>
-        )}
-        {account && showBuyOrSellButton && !isMySell && isApprove && !isEndAuction && (
+        ) : account && showBuyOrSellButton && !isMySell && !isEndAuction ? (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
@@ -457,6 +457,7 @@ export default forwardRef(function Card(props, ref) {
             onClick={() => {
               onClose && onClose()
               if (isSell && isApprove && option === 2) {
+                // Create auction.
                 if (!minSellPrice || !maxSellPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
@@ -474,6 +475,7 @@ export default forwardRef(function Card(props, ref) {
                 return
               }
               if (isSell && isApprove && option === 1) {
+                // Sell directly.
                 if (!sellPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
@@ -484,6 +486,7 @@ export default forwardRef(function Card(props, ref) {
                 return
               }
               if (isSell && isApprove && option === 3) {
+                // Rent
                 if (!lendPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
@@ -511,9 +514,9 @@ export default forwardRef(function Card(props, ref) {
               ? t('Buy Directly')
               : !isEndAuction
               ? t('Make Offer')
-              : null}
+              : t('Auction is ended!')}
           </StyledButton>
-        )}
+        ) : null}
       </Box>
       {history && (
         <Box

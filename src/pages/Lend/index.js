@@ -79,10 +79,10 @@ export default function Marketplace() {
         result = listMyLend
         break
       case 'My borrow list':
-         result = listBorrow
+        result = listBorrow
         break
       default:
-         result = listLend
+        result = listLend
         break
     }
     if (filterByClassify !== 'All') {
@@ -112,6 +112,7 @@ export default function Marketplace() {
     setPageCount(Math.ceil(result.length / itemsPerPage))
     setCurrentItems(result.slice(itemOffset, endOffset))
   }, [
+    listMyLend,
     account,
     chainId,
     filterByClassify,

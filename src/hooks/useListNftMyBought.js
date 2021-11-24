@@ -2,10 +2,10 @@ import { useEffect, useState } from 'react'
 import useNtfContract from './useNtfContract'
 import useNtfMarketContract from './useNtfMarketContract'
 import axios from 'axios'
-import _ from 'lodash'
 import { useSelector } from 'react-redux'
 import moment from 'moment'
 import { ethers } from 'ethers'
+
 const useListNftMyBought = () => {
   const nftContract = useNtfContract()
   const nftMarketContract = useNtfMarketContract()
@@ -16,19 +16,19 @@ const useListNftMyBought = () => {
 
   useEffect(() => {
     const onHandleSocket = (timestampFromEvent) => {
-        console.log('socket::>>', timestampFromEvent)
-        setTimestamp(timestampFromEvent)
+      console.log('socket::>>', timestampFromEvent)
+      setTimestamp(timestampFromEvent)
     }
     if (socket) {
-        socket.on('NeedUpdateData', onHandleSocket)
+      socket.on('NeedUpdateData', onHandleSocket)
     }
     return () => socket && socket.off('NeedUpdateData')
   }, [socket])
 
   const fetchUserNft = async () => {
     const markets = await axios.get(`${process.env.REACT_APP_API_URL}/nfts/user/${account}`)
-    const data = markets.data.nfts.map(marketItem => {
-      const sellHistories = marketItem.sellHistories.map(history => {
+    const data = markets.data.nfts.map((marketItem) => {
+      const sellHistories = marketItem.sellHistories.map((history) => {
         const createTime = new Date(history.createdAt)
         const timestamp = createTime.getTime() / 1000
         let item = {
@@ -51,7 +51,7 @@ const useListNftMyBought = () => {
         morale: marketItem.morale.toString(),
         skill: marketItem.skill.toString(),
         speed: marketItem.speed.toString(),
-        buyer: marketItem.buyer? marketItem.buyer : '',
+        buyer: marketItem.buyer ? marketItem.buyer : '',
         owner: marketItem.owner.toString(),
         sellHistories: sellHistories,
       }
