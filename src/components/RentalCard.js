@@ -160,7 +160,7 @@ export default forwardRef(function Card(props, ref) {
               <MI.AccessAlarms
                 onClick={() => blockRemains(chainId, item.lendBlockDuration)}
                 fontSize="small"
-                style={{ fill: '#c23a3a', cursor: 'pointer' }}
+                style={{ fill: '#c23a3a', cursor: 'pointer' , marginTop: "12px"}}
               />
             </Box>
           ) : null}
