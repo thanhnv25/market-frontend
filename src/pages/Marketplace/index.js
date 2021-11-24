@@ -113,7 +113,18 @@ export default function Marketplace() {
     const endOffset = itemOffset + itemsPerPage
     setPageCount(Math.ceil(result.length / itemsPerPage))
     setCurrentItems(result.slice(itemOffset, endOffset))
-  }, [account, chainId, filterByClassify, filterByOrderType, listNftIsListing, search, sortBy, itemOffset, itemsPerPage, block])
+  }, [
+    account,
+    chainId,
+    filterByClassify,
+    filterByOrderType,
+    listNftIsListing,
+    search,
+    sortBy,
+    itemOffset,
+    itemsPerPage,
+    block,
+  ])
 
   const onCloseModal = () => {
     setOpenModal(false)

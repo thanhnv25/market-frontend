@@ -95,7 +95,8 @@ export default forwardRef(function Card(props, ref) {
   const onSell = useSellNft()
   const onLevelUp = useLevelUp()
   const onCreateLend = useCreateLend()
-  const { isApprove, onApprove } = useApproveAll()
+  const { onApprove } = useApproveAll()
+  const isApprove = useSelector((state) => state.provider.isApprovedForAll)
   const sellHistories = item.sellHistories
   const chainId = useSelector((state) => state.provider.chainId)
   const onCancelMarketItem = useCancelMarketItem()
