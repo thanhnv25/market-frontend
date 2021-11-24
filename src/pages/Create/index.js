@@ -237,7 +237,9 @@ export default function Create() {
   }
 
   useEffect(() => {
-    setIsOwner(account.toLowerCase() === OWNER_NFT[chainId].toLowerCase())
+    if (account) {
+      setIsOwner(account.toLowerCase() === OWNER_NFT[chainId]?.toLowerCase())
+    }
   }, [account, chainId, setIsOwner])
 
   return (
@@ -252,10 +254,10 @@ export default function Create() {
             </span>
           ))}
       </Heading>
-      <Box style={{ borderColor: '#decbbd' }} sx={{ minWidth: 120 }}>
+      <Box style={{ borderColor: '#decbbd' }} sx={{ minWidth: 120 }} width="20vw">
         <FormControl style={{ borderColor: '#decbbd' }} fullWidth>
           <InputLabel style={{ color: '#decbbd' }}>Action</InputLabel>
-          <StyledSelect style={{ color: '#decbbd' }} width="20vw" value={option} label="Action" onChange={handleChange}>
+          <StyledSelect style={{ color: '#decbbd' }} value={option} label="Action" onChange={handleChange}>
             <MenuItem value={1}>Create Item</MenuItem>
             <MenuItem value={2}>Create Auction</MenuItem>
           </StyledSelect>
