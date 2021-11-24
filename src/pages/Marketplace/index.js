@@ -76,8 +76,7 @@ export default function Marketplace() {
       case 'Buy from Admin':
         result = _.filter(
           listNftIsListing,
-          (item) => item.seller.toLowerCase() === OWNER_NFT_MARKET[chainId].toLowerCase()
-           && block < item.endBlock,
+          (item) => item.seller.toLowerCase() === OWNER_NFT_MARKET[chainId].toLowerCase() && block < item.endBlock,
         )
         break
       case 'Auction Ended':
@@ -113,7 +112,18 @@ export default function Marketplace() {
     const endOffset = itemOffset + itemsPerPage
     setPageCount(Math.ceil(result.length / itemsPerPage))
     setCurrentItems(result.slice(itemOffset, endOffset))
-  }, [account, chainId, filterByClassify, filterByOrderType, listNftIsListing, search, sortBy, itemOffset, itemsPerPage, block])
+  }, [
+    account,
+    chainId,
+    filterByClassify,
+    filterByOrderType,
+    listNftIsListing,
+    search,
+    sortBy,
+    itemOffset,
+    itemsPerPage,
+    block,
+  ])
 
   const onCloseModal = () => {
     setOpenModal(false)
