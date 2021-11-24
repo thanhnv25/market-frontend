@@ -25,7 +25,6 @@ const useListNftInListing = (res) => {
     if (boundBlock === undefined) {
       boundBlock = Number.MAX_SAFE_INTEGER
     }
-  console.log(block)
 
     const availableItem = await axios.get(`${process.env.REACT_APP_API_URL}/nft-market/items/${boundBlock}`)
     // get list tokens
