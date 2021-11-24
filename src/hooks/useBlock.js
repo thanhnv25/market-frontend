@@ -4,7 +4,7 @@ import { getTxPending, removeTxSuccess } from '../utils'
 import useAlertCallback from './useAlertCallback'
 
 const useBlock = () => {
-  const [block, setBlock] = useState(0)
+  const [block, setBlock] = useState()
   const alertMessage = useAlertCallback()
   const provider = window.providerEth
   const { t } = useTranslation()

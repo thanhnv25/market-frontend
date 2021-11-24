@@ -73,7 +73,6 @@ export default forwardRef(function Card(props, ref) {
   const onBorrow = useBorrow()
   const isBorrowed = item.borrower !== '0x0000000000000000000000000000000000000000'
   const isLender = item.lender.toLowerCase() === account.toLowerCase()
-console.log(item)
 
   const icon =
     item.class === 1 ? (
@@ -145,22 +144,19 @@ console.log(item)
             }}
           ></StyledImage>
 
-          {showBuyOrSellButton && !isBorrowed ? (
+          {showBuyOrSellButton && (
 
             <Box display="flex" justifyContent="space-between">
-              <Typography fontSize="14px" color="#90b8ef" fontWeight={400}>
+              <Typography fontSize="14px" color="#90b8ef" fontWeight={400} style = {{marginTop: "12px"}}>
                 {item.remainBlock <= 0 ? t('Rental sesstion ended') : t('Rental end at block: ') + item.lendBlockDuration}
               </Typography>
               <MI.AccessAlarms
                 onClick={() => blockRemains(chainId, item.lendBlockDuration)}
                 fontSize="small"
-                style={{ fill: '#c23a3a', cursor: 'pointer' }}
+                style={{ fill: '#c23a3a', cursor: 'pointer' , marginTop: "12px"}}
               />
             </Box>
-
-
-
-          ) : null}
+          ) }
 
           {/* change to lend price */}
           <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>

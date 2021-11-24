@@ -27,6 +27,7 @@ const useListLend = (bound) => {
             boundBlock = Number.MAX_SAFE_INTEGER
         }
         const availableItem = await axios.get(`${process.env.REACT_APP_API_URL}/lend-items/avail-lend/${boundBlock}`)
+
         // get list lend
         const listItems = await availableItem.data
         const data = await Promise.all(

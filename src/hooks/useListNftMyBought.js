@@ -54,6 +54,7 @@ const useListNftMyBought = () => {
         buyer: marketItem.buyer? marketItem.buyer : '',
         owner: marketItem.owner.toString(),
         sellHistories: sellHistories,
+        lock: marketItem.lock
       }
       return item
     })
