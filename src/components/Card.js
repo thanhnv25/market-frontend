@@ -130,6 +130,7 @@ export default forwardRef(function Card(props, ref) {
     ) : item.class === 4 ? (
       <Mech />
     ) : null
+
   return (
     <StyledCard {...props}>
       <Box padding="16px" width="100%">
@@ -346,7 +347,7 @@ export default forwardRef(function Card(props, ref) {
               />
               <CssTimeTextField
                 id="datetime-local"
-                label={option === 2? "Auction close" : "Rent close"}
+                label={option === 2 ? 'Auction close' : 'Rent close'}
                 type="datetime-local"
                 style={{ margin: '0 0 12px' }}
                 inputProps={{
