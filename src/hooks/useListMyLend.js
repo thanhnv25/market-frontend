@@ -22,10 +22,9 @@ const useListMyLend = (address) => {
     }, [socket])
 
     const fetchData = useCallback(async (account,currenBlock) => {
-        const availableItem = await axios.get(`${process.env.REACT_APP_API_URL}/lend-items/my-lend/${account}`)
-        console.log(`${process.env.REACT_APP_API_URL}/lend-items/my-lend/${account}`);
+        const availableItem = await axios.get(`${process.env.REACT_APP_API_URL}/lend-items/my-lend/${account}`) 
+
         const listItems = await availableItem.data
-        console.log(listItems);
         const data = await Promise.all(
             listItems.lendItems.map(async (i) => {
                 let blockEnd = i.lendBlockDuration

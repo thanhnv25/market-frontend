@@ -18,6 +18,7 @@ export default function Modal({ open, onClose, itemModal }) {
           left: '50%',
           top: '50%',
           transform: 'translate(-50%,-50%)',
+          overflow: 'auto'
         }}
         imageWidth="260px"
         showBuyOrSellButton

@@ -25,6 +25,7 @@ import useCancelMarketItemAuction from '../hooks/useCancelMarketItemAuction'
 import useLevelUp from '../hooks/useLevelUp'
 import { copyBuyer, blockRemains } from '../utils/index'
 import { EXPLORER_TX } from '../constants/index'
+
 const StyledCard = styled(Box)`
   height: 340px;
   width: 225px;
@@ -95,7 +96,8 @@ export default forwardRef(function Card(props, ref) {
   const onSell = useSellNft()
   const onLevelUp = useLevelUp()
   const onCreateLend = useCreateLend()
-  const { isApprove, onApprove } = useApproveAll()
+  const { onApprove } = useApproveAll()
+  const isApprove = useSelector((state) => state.provider.isApprovedForAll)
   const sellHistories = item.sellHistories
   const chainId = useSelector((state) => state.provider.chainId)
   const onCancelMarketItem = useCancelMarketItem()
@@ -105,6 +107,9 @@ export default forwardRef(function Card(props, ref) {
   const [option, setOption] = useState(1)
 
   const isEndAuction = block >= item.endBlock
+  if (item.tokenId === 102) {
+    console.log(`isEndAuction`, isEndAuction)
+  }
   const offers = item.offers
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
@@ -115,6 +120,7 @@ export default forwardRef(function Card(props, ref) {
   const [blockNumber, setBlockNumber] = useState(0)
   const [blockDuration, setBlockDuration] = useState(0)
   var currentdate = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0]
+  const isLock = item.lock
   let isLatestOffer = false
   if (offers && offers.length > 0) {
     isLatestOffer = offers[0].asker.toLowerCase() === account.toLowerCase()
@@ -129,7 +135,6 @@ export default forwardRef(function Card(props, ref) {
     ) : item.class === 4 ? (
       <Mech />
     ) : null
-
   return (
     <StyledCard {...props}>
       <Box padding="16px" width="100%">
@@ -204,9 +209,9 @@ export default forwardRef(function Card(props, ref) {
             style={{
               backgroundImage: `url("${item.image}")`,
             }}
-          ></StyledImage>
+          />
           {/* select box */}
-          {showBuyOrSellButton && isOwner && (
+          {showBuyOrSellButton && isOwner && !isLock && (
             <Box style={{ borderColor: '#ffffff', marginTop: '20px' }} sx={{ minWidth: 120 }}>
               <FormControl style={{ borderColor: '#ffffff' }} fullWidth>
                 <InputLabel style={{ color: '#ffffff' }}>Action</InputLabel>
@@ -225,7 +230,7 @@ export default forwardRef(function Card(props, ref) {
             </Box>
           )}
 
-          {showBuyOrSellButton && !isMySell && !isOwner ? (
+          {showBuyOrSellButton && !isMySell && !isOwner && !isLock ? (
             <Switch
               defaultChecked={false}
               disabled={item.minPrice === item.price}
@@ -235,7 +240,7 @@ export default forwardRef(function Card(props, ref) {
               }}
             />
           ) : null}
-          {showBuyOrSellButton && !isBuyDirectly && (!isSell || isMySell) ? (
+          {showBuyOrSellButton && !isBuyDirectly && !isLock && (!isSell || isMySell) ? (
             <Box display="flex" justifyContent="space-between">
               <Typography fontSize="14px" color="#90b8ef" fontWeight={400}>
                 {item.remainBlock <= 0 ? t('Auction ended') : t('Auction end at block: ') + item.endBlock}
@@ -247,7 +252,7 @@ export default forwardRef(function Card(props, ref) {
               />
             </Box>
           ) : null}
-          {showBuyOrSellButton && isSell && isApprove && option === 2 ? (
+          {showBuyOrSellButton && isSell && !isLock && isApprove && option === 2 ? (
             <Box>
               <div
                 style={{
@@ -311,7 +316,7 @@ export default forwardRef(function Card(props, ref) {
                 {t('Number of block to close: ') + blockNumber}
               </Typography>
             </Box>
-          ) : showBuyOrSellButton && isSell && isApprove && option === 1 ? (
+          ) : showBuyOrSellButton && isSell && isApprove && !isLock && option === 1 ? (
             <Box>
               <CssTextField
                 style={{ marginTop: '20px' }}
@@ -328,7 +333,7 @@ export default forwardRef(function Card(props, ref) {
                 }}
               />
             </Box>
-          ) : showBuyOrSellButton && isSell && isApprove && option === 3 ? (
+          ) : showBuyOrSellButton && isSell && isApprove && !isLock && option === 3 ? (
             <Box>
               <CssTextField
                 style={{ marginTop: '20px', marginBottom: '20px' }}
@@ -369,15 +374,28 @@ export default forwardRef(function Card(props, ref) {
                 {t('Number of block to close: ') + blockDuration}
               </Typography>
             </Box>
-          ) : !isApprove && isSell ? null : item.minPrice !== item.price ? (
-            <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
-              {item.minPrice + ' to ' + item.price + ' ETH'}
-            </Typography>
-          ) : (
-            <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
-              {item.price === undefined ? null : item.price + ' ETH'}
-            </Typography>
-          )}
+          ) : showBuyOrSellButton && isLock ?
+            <div style = {{display: 'block'}}>
+              <MI.LockRounded fontSize="medium" 
+                style={{ fill: '#c23a3a', marginTop: "12px",width: "100%" }}>
+              </MI.LockRounded>
+              <Typography
+                style={{}}
+                color={'#d96a6c'}
+                fontSize="12px"
+              >
+                {t('item is locked')}
+              </Typography>
+            </div>
+            : item.minPrice !== item.price ? (
+              <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
+                {item.minPrice + ' to ' + item.price + ' ETH'}
+              </Typography>
+            ) : (
+              <Typography fontSize="14px" lineHeight="48px" fontWeight={400}>
+                {item.price === undefined ? null : item.price + ' ETH'}
+              </Typography>
+            )}
           {showBuyOrSellButton && !isMySell && !isOwner && !isBuyDirectly && !isEndAuction ? (
             <CssTextField
               width="60%"
@@ -414,17 +432,15 @@ export default forwardRef(function Card(props, ref) {
             </Typography>
           ) : null}
         </Box>
-        {!account && showBuyOrSellButton && (
+        {!account && showBuyOrSellButton ? (
           <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={connectWallet}>
             {t('Connect Metamask')}
           </StyledButton>
-        )}
-        {account && !isApprove && showBuyOrSellButton && isSell && (
+        ) : account && !isApprove && showBuyOrSellButton && isSell && !isLock ? (
           <StyledButton variant="contained" style={{ margin: '8px 0' }} onClick={onApprove}>
             {t('Approve NFT')}
           </StyledButton>
-        )}
-        {account && showBuyOrSellButton && isMySell && (
+        ) : account && showBuyOrSellButton && isMySell ? (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
@@ -437,8 +453,7 @@ export default forwardRef(function Card(props, ref) {
           >
             {t('Cancel')}
           </StyledButton>
-        )}
-        {account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && isLatestOffer && isEndAuction && (
+        ) : account && showBuyOrSellButton && !isMySell && (!isOwner || isApprove) && isLatestOffer && isEndAuction ? (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
@@ -448,8 +463,7 @@ export default forwardRef(function Card(props, ref) {
           >
             {t('Claim')}
           </StyledButton>
-        )}
-        {account && showBuyOrSellButton && !isMySell && !isEndAuction && (
+        ) : account && showBuyOrSellButton && !isMySell && !isEndAuction && !isLock ? (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
@@ -457,6 +471,7 @@ export default forwardRef(function Card(props, ref) {
             onClick={() => {
               onClose && onClose()
               if (isSell && isApprove && option === 2) {
+                // Create auction.
                 if (!minSellPrice || !maxSellPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
@@ -474,6 +489,7 @@ export default forwardRef(function Card(props, ref) {
                 return
               }
               if (isSell && isApprove && option === 1) {
+                // Sell directly.
                 if (!sellPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
@@ -484,6 +500,7 @@ export default forwardRef(function Card(props, ref) {
                 return
               }
               if (isSell && isApprove && option === 3) {
+                // Rent
                 if (!lendPrice) {
                   alertMessage(t('Error'), t('Please fill input'), 'error')
                 }
@@ -503,7 +520,7 @@ export default forwardRef(function Card(props, ref) {
               }
             }}
           >
-            {isSell && isApprove && option !== 3
+            {isSell && isApprove && !isLock && option !== 3
               ? t('Sell')
               : isSell && isApprove
               ? t('Up for rent')
@@ -511,9 +528,9 @@ export default forwardRef(function Card(props, ref) {
               ? t('Buy Directly')
               : !isEndAuction
               ? t('Make Offer')
-              : null}
+              : t('Auction is ended!')}
           </StyledButton>
-        )}
+        ) : null}
       </Box>
       {history && (
         <Box

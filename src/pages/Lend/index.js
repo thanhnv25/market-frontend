@@ -54,7 +54,7 @@ export default function Marketplace() {
   const { t } = useTranslation()
   const chainId = useSelector((state) => state.provider.chainId)
   const [search, setSearch] = useState('')
-  const [sortBy, setSortBy] = useState('Lowest price')
+  const [sortBy, setSortBy] = useState('Highest ID')
   const [filterByOrderType, setFilterByOrderType] = useState('All')
   const [filterByClassify, setFilterByClassify] = useState('All')
   const [listDataLength, setListDataLength] = useState([])
@@ -79,10 +79,10 @@ export default function Marketplace() {
         result = listMyLend
         break
       case 'My borrow list':
-         result = listBorrow
+        result = listBorrow
         break
       default:
-         result = listLend
+        result = listLend
         break
     }
     if (filterByClassify !== 'All') {
@@ -92,26 +92,28 @@ export default function Marketplace() {
       result = _.filter(result, (item) => item.tokenId.toString() === search)
     }
     switch (sortBy) {
+      case 'Highest ID':
+        result = _.orderBy(result, ['tokenId'], ['desc'])
+        break
+      case 'Lowest ID':
+        result = _.orderBy(result, ['tokenId'], ['asc'])
+        break
       case 'Lowest price':
         result = _.orderBy(result, ['price'], ['asc'])
         break
       case 'Highest price':
         result = _.orderBy(result, ['price'], ['desc'])
         break
-      case 'Lowest ID':
-        result = _.orderBy(result, ['id'], ['asc'])
-        break
-      case 'Highest ID':
-        result = _.orderBy(result, ['id'], ['desc'])
-        break
       default:
         break
     }
+
     setListDataLength(result.length)
     const endOffset = itemOffset + itemsPerPage
     setPageCount(Math.ceil(result.length / itemsPerPage))
     setCurrentItems(result.slice(itemOffset, endOffset))
   }, [
+    listMyLend,
     account,
     chainId,
     filterByClassify,
@@ -157,10 +159,10 @@ export default function Marketplace() {
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
           >
+            <MenuItem value="Highest ID">{t('Highest ID')}</MenuItem>
+            <MenuItem value="Lowest ID">{t('Lowest ID')}</MenuItem>
             <MenuItem value="Lowest price">{t('Lowest price')}</MenuItem>
             <MenuItem value="Highest price">{t('Highest price')}</MenuItem>
-            <MenuItem value="Lowest ID">{t('Lowest ID')}</MenuItem>
-            <MenuItem value="Highest ID">{t('Highest ID')}</MenuItem>
           </StyledSelect>
         </StyledFormControl>
         <StyledFormControl width="120px" value={filterByOrderType}>

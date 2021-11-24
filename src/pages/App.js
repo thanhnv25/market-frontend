@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useSelector } from 'react-redux'
+import { useDispatch, useSelector } from 'react-redux'
 import { useHistory, useLocation } from 'react-router'
 import { Redirect, Route, Switch } from 'react-router-dom'
 import useBalance from '../hooks/useBalance'
@@ -13,9 +13,12 @@ import Marketplace from './Marketplace'
 import MyNft from './MyNft'
 import Lending from './Lend'
 import io from 'socket.io-client'
+import { fetchApproveForAll } from '../states/providerSlice'
+import useApproveAll from '../hooks/useApproveAll'
 
 function App() {
   useProvider()
+  const dispatch = useDispatch()
   const account = useSelector((state) => state.provider.account)
   const { pathname } = useLocation()
   const history = useHistory()
@@ -32,6 +35,7 @@ function App() {
   const { t } = useTranslation()
   const [language, toggleLanguage] = useLanguage()
   const [socketIO, setSocketIO] = useState()
+  const { isApprove } = useApproveAll()
 
   useBalance()
 
@@ -42,6 +46,10 @@ function App() {
       setSocketIO(socket)
     }
   }, [])
+
+  useEffect(() => {
+      dispatch(fetchApproveForAll(isApprove))
+  }, [dispatch, isApprove])
 
   return (
     <div className="app">

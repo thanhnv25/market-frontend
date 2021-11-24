@@ -51,7 +51,7 @@ export default function Marketplace() {
   const { t } = useTranslation()
   const chainId = useSelector((state) => state.provider.chainId)
   const [search, setSearch] = useState('')
-  const [sortBy, setSortBy] = useState('Lowest price')
+  const [sortBy, setSortBy] = useState('Lowest ID')
   const [filterByOrderType, setFilterByOrderType] = useState('My NFT')
   const [filterByClassify, setFilterByClassify] = useState('All')
   const [listDataLength, setListDataLength] = useState([])
@@ -85,17 +85,11 @@ export default function Marketplace() {
       result = _.filter(result, (item) => item.tokenId.toString() === search)
     }
     switch (sortBy) {
-      case 'Lowest price':
-        result = _.orderBy(result, ['price'], ['asc'])
-        break
-      case 'Highest price':
-        result = _.orderBy(result, ['price'], ['desc'])
-        break
       case 'Lowest ID':
-        result = _.orderBy(result, ['id'], ['asc'])
+        result = _.orderBy(result, ['tokenId'], ['asc'])
         break
       case 'Highest ID':
-        result = _.orderBy(result, ['id'], ['desc'])
+        result = _.orderBy(result, ['tokenId'], ['desc'])
         break
       default:
         break
@@ -150,8 +144,6 @@ export default function Marketplace() {
             value={sortBy}
             onChange={(e) => setSortBy(e.target.value)}
           >
-            <MenuItem value="Lowest price">{t('Lowest price')}</MenuItem>
-            <MenuItem value="Highest price">{t('Highest price')}</MenuItem>
             <MenuItem value="Lowest ID">{t('Lowest ID')}</MenuItem>
             <MenuItem value="Highest ID">{t('Highest ID')}</MenuItem>
           </StyledSelect>

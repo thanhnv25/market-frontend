@@ -270,7 +270,7 @@ export default function Create() {
         value={urlImage}
         onChange={(e) => setUrlImage(e.target.value)}
       />
-      {option == 1 && (
+      {option === 1 && (
         <CssTextField
           width="20vw"
           unit="ETH"
@@ -284,7 +284,7 @@ export default function Create() {
           }}
         />
       )}
-      {option == 2 && (
+      {option === 2 && (
         <Box width="20vw" display="flex" justifyContent="space-between">
           <CssTextField
             width="9vw"
@@ -319,7 +319,7 @@ export default function Create() {
           })}
         </StyledSelect>
       </StyledFormControl>
-      {option == 2 && (
+      {option === 2 && (
         <Box width="20vw" display="flex" justifyContent="space-between">
           <CssTimeTextField
             id="datetime-local"
@@ -338,7 +338,7 @@ export default function Create() {
           />
         </Box>
       )}
-      {option == 2 && (
+      {option === 2 && (
         <Typography color={blockNumber >= 10 ? '#decbbd' : '#c23a3a'} width="20vw" fontSize="12px" fontWeight={400}>
           {t('Number of block to close: ') + blockNumber}
         </Typography>
@@ -443,7 +443,7 @@ export default function Create() {
               alertMessage(t('Error'), t('Max price must greater than min price'), 'error')
               return
             }
-            if (blockNumber < 10 && option == 2) {
+            if (blockNumber < 10 && option === 2) {
               alertMessage(t('Error'), t('Number of block must >= 10 '), 'error')
               return
             }
