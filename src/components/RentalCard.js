@@ -73,7 +73,6 @@ export default forwardRef(function Card(props, ref) {
   const onBorrow = useBorrow()
   const isBorrowed = item.borrower !== '0x0000000000000000000000000000000000000000'
   const isLender = item.lender.toLowerCase() === account.toLowerCase()
-  console.log(item)
 
   const icon =
     item.class === 1 ? (
@@ -152,7 +151,7 @@ export default forwardRef(function Card(props, ref) {
 
           {showBuyOrSellButton && !isBorrowed ? (
             <Box display="flex" justifyContent="space-between">
-              <Typography fontSize="14px" color="#90b8ef" fontWeight={400}>
+              <Typography fontSize="14px" color="#90b8ef" fontWeight={400} style = {{marginTop: "12px"}} >
                 {item.remainBlock <= 0
                   ? t('Rental sesstion ended')
                   : t('Rental end at block: ') + item.lendBlockDuration}

@@ -75,7 +75,7 @@ export default function Marketplace() {
         result = listNftIsMyBought
         break
       default:
-        result = listNftIsListing
+        result = listNftIsMyBought
         break
     }
     if (filterByClassify !== 'All') {

@@ -90,6 +90,7 @@ export default forwardRef(function Card(props, ref) {
   const [lendPrice, setLendPrice] = useState('')
   const { showBuyOrSellButton, history, onClose, item } = props
   const [isBuyDirectly, setIsBuyDirectly] = useState(item.minPrice === item.price && item.seller !== undefined)
+
   const account = useSelector((state) => state.provider.account) ?? ''
   const onBuy = useBuyNft()
   const onOffer = useMakeOffer()
@@ -107,9 +108,6 @@ export default forwardRef(function Card(props, ref) {
   const [option, setOption] = useState(1)
 
   const isEndAuction = block >= item.endBlock
-  if (item.tokenId === 102) {
-    console.log(`isEndAuction`, isEndAuction)
-  }
   const offers = item.offers
   const isSell = item.buyer !== '0x0000000000000000000000000000000000000000'
   const isMySell = !isSell && item.seller.toLowerCase() === account.toLowerCase()
@@ -125,6 +123,7 @@ export default forwardRef(function Card(props, ref) {
   if (offers && offers.length > 0) {
     isLatestOffer = offers[0].asker.toLowerCase() === account.toLowerCase()
   }
+
   const icon =
     item.class === 1 ? (
       <Beast />
@@ -444,6 +443,7 @@ export default forwardRef(function Card(props, ref) {
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
+            disabled = {(item.currentPrice > 0 || offers?.length > 0)}
             onClick={() => {
               let isAuction = false
               if (item.minPrice !== item.maxPrice) isAuction = true
@@ -463,7 +463,7 @@ export default forwardRef(function Card(props, ref) {
           >
             {t('Claim')}
           </StyledButton>
-        ) : account && showBuyOrSellButton && !isMySell && !isEndAuction && !isLock ? (
+        ) : account && showBuyOrSellButton && !isMySell && !isLock ? (
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
@@ -511,6 +511,9 @@ export default forwardRef(function Card(props, ref) {
                 return
               }
               if (!isBuyDirectly) {
+                if (parseFloat(offerPrice) < item.currentPrice) {
+                  alertMessage(t('Error'), t('Offer amount must greater than current price'), 'error')
+                }
                 onOffer(item, offerPrice)
                 return
               }
@@ -528,7 +531,7 @@ export default forwardRef(function Card(props, ref) {
               ? t('Buy Directly')
               : !isEndAuction
               ? t('Make Offer')
-              : t('Auction is ended!')}
+              : t('Auction is ended')}
           </StyledButton>
         ) : null}
       </Box>
@@ -574,6 +577,7 @@ export default forwardRef(function Card(props, ref) {
                     <i
                       className="fas fa-external-link-alt"
                       style={{
+                        marginTop: '2px',
                         color: '#c23a3a',
                         cursor: 'pointer',
                         visibility: item.transactionHash ? 'unset' : 'hidden',

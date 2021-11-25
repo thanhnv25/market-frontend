@@ -68,7 +68,7 @@ const useListNftMyBought = () => {
       }
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, nftContract, nftMarketContract, timestamp])
+  }, [fetchUserNft, account, nftContract, nftMarketContract, timestamp])
   return list
 }
 
