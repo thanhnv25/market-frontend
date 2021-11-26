@@ -151,7 +151,7 @@ export default forwardRef(function Card(props, ref) {
 
           {showBuyOrSellButton && !isBorrowed ? (
             <Box display="flex" justifyContent="space-between">
-              <Typography fontSize="14px" color="#90b8ef" fontWeight={400} style = {{marginTop: "12px"}} >
+              <Typography fontSize="14px" color="#90b8ef" fontWeight={400} style={{ marginTop: "12px" }} >
                 {item.remainBlock <= 0
                   ? t('Rental sesstion ended')
                   : t('Rental end at block: ') + item.lendBlockDuration}
@@ -159,7 +159,7 @@ export default forwardRef(function Card(props, ref) {
               <MI.AccessAlarms
                 onClick={() => blockRemains(chainId, item.lendBlockDuration)}
                 fontSize="small"
-                style={{ fill: '#c23a3a', cursor: 'pointer' , marginTop: "12px"}}
+                style={{ fill: '#c23a3a', cursor: 'pointer', marginTop: "12px" }}
               />
             </Box>
           ) : null}
