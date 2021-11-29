@@ -374,9 +374,9 @@ export default forwardRef(function Card(props, ref) {
               </Typography>
             </Box>
           ) : showBuyOrSellButton && isLock ?
-            <div style = {{display: 'block'}}>
-              <MI.LockRounded fontSize="medium" 
-                style={{ fill: '#c23a3a', marginTop: "12px",width: "100%" }}>
+            <div style={{ display: 'block' }}>
+              <MI.LockRounded fontSize="medium"
+                style={{ fill: '#c23a3a', marginTop: "12px", width: "100%" }}>
               </MI.LockRounded>
               <Typography
                 style={{}}
@@ -443,7 +443,7 @@ export default forwardRef(function Card(props, ref) {
           <StyledButton
             variant="contained"
             style={{ margin: '8px 0' }}
-            disabled = {(item.currentPrice > 0 || offers?.length > 0)}
+            disabled={(item.currentPrice > 0 || offers?.length > 0)}
             onClick={() => {
               let isAuction = false
               if (item.minPrice !== item.maxPrice) isAuction = true
@@ -526,12 +526,12 @@ export default forwardRef(function Card(props, ref) {
             {isSell && isApprove && !isLock && option !== 3
               ? t('Sell')
               : isSell && isApprove
-              ? t('Up for rent')
-              : isBuyDirectly
-              ? t('Buy Directly')
-              : !isEndAuction
-              ? t('Make Offer')
-              : t('Auction is ended')}
+                ? t('Up for rent')
+                : isBuyDirectly
+                  ? t('Buy Directly')
+                  : !isEndAuction
+                    ? t('Make Offer')
+                    : t('Auction is ended')}
           </StyledButton>
         ) : null}
       </Box>
@@ -559,27 +559,58 @@ export default forwardRef(function Card(props, ref) {
               sellHistories.map((item, index) => {
                 return (
                   <Box display="flex" justifyContent="space-between">
-                    <MI.CopyAllSharp
-                      onClick={() => copyBuyer(item.buyer)}
-                      fontSize="small"
-                      style={{ fill: '#c23a3a', cursor: 'pointer' }}
+                    <link
+                      rel="stylesheet"
+                      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
                     />
+                    <Box>
+                      <MI.CopyAllSharp
+                        onClick={() => {
+                          copyBuyer(item.buyer)
+                          document.getElementById(`button-copy-${index}`).style.display = "none";
+                          document.getElementById(`button-succ-${index}`).style.display = "block";
+                          setTimeout(() => {
+                            document.getElementById(`button-succ-${index}`).style.display = "none";
+                            document.getElementById(`button-copy-${index}`).style.display = "block";
+                          }, 1500)
+                        }}
+                        fontSize="small"
+                        style={{
+                          fill: '#c23a3a',
+                          marginTop: "2px",
+                          cursor: 'pointer',
+                          fontSize: "17px"
+                        }}
+                        id={`button-copy-${index}`}
+                      />
+
+                      <i
+                        id={`button-succ-${index}`}
+                        className="far fa-check-circle"
+                        style={{
+                          marginTop: '2px',
+                          color: '#c23a3a',
+                          cursor: 'pointer',
+                          display: "none",
+                          fontStyle: "normal",
+                          fontSize: "13px",
+                        }}
+                      >  Copied </i>
+                    </Box>
+
                     <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
                       {`${item.buyer.slice(0, 6)}...${item.buyer.slice(item.buyer.length - 4, item.buyer.length)}`}
                     </Typography>
                     <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
                       {item.price} ETH ({item.time})
                     </Typography>
-                    <link
-                      rel="stylesheet"
-                      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-                    />
                     <i
                       className="fas fa-external-link-alt"
                       style={{
-                        marginTop: '2px',
+                        marginTop: '4px',
                         color: '#c23a3a',
                         cursor: 'pointer',
+                        fontSize: '13px',
                         visibility: item.transactionHash ? 'unset' : 'hidden',
                       }}
                       onClick={() => window.open(EXPLORER_TX[chainId] + item.transactionHash)}
