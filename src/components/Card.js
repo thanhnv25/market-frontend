@@ -119,7 +119,7 @@ export default forwardRef(function Card(props, ref) {
   const [blockDuration, setBlockDuration] = useState(0)
   var currentdate = new Date(new Date().toString().split('GMT')[0] + ' UTC').toISOString().split('.')[0]
   const isLock = item.lock
-  let isLatestOffer
+  let isLatestOffer = false
   if (offers && offers.length > 0) {
     isLatestOffer = offers[0].asker.toLowerCase() === account.toLowerCase()
   }
