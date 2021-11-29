@@ -123,7 +123,6 @@ export default forwardRef(function Card(props, ref) {
   if (offers && offers.length > 0) {
     isLatestOffer = offers[0].asker.toLowerCase() === account.toLowerCase()
   }
-
   const icon =
     item.class === 1 ? (
       <Beast />
