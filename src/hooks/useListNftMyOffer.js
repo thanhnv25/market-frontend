@@ -3,9 +3,10 @@ import { ethers } from 'ethers'
 import { useCallback, useEffect, useState } from 'react'
 import useBlock from './useBlock'
 import moment from 'moment'
+import { useSelector } from 'react-redux'
 import _ from 'lodash'
 
-const useListNftInListing = (res) => {
+const useListNftMyOffer = (address) => {
   const [list, setList] = useState([])
   const [timestamp, setTimestamp] = useState([])
   const block = useBlock()
@@ -22,15 +23,11 @@ const useListNftInListing = (res) => {
     return () => socket && socket.off('NeedUpdateData')
   }, [socket])
 
-  const fetchData = useCallback(async (boundBlock, currentBlock) => {
-    if (boundBlock === undefined) {
-      boundBlock = Number.MAX_SAFE_INTEGER
-    }
-
-    const availableItem = await axios.get(`${process.env.REACT_APP_API_URL}/nft-market/items/${boundBlock}`)
+  const fetchData = useCallback(async (account,currentBlock) => {
+    const availableItem = await axios.get(`${process.env.REACT_APP_API_URL}/nft-market/my-offer/${account}`)
     // get list tokens
     const listItems = availableItem.data
-    const data = listItems.itemMarket.map((i) => {
+    const data = listItems.itemMarkets.map((i) => {
       let minPrice = ethers.utils.formatUnits(i.minPrice.toString(), 'ether')
       let price = ethers.utils.formatUnits(i.maxPrice.toString(), 'ether')
       let currentPrice = ethers.utils.formatUnits(i.currentPrice.toString(), 'ether')
@@ -86,7 +83,7 @@ const useListNftInListing = (res) => {
   }, [])
   useEffect(() => {
     ;(async () => {
-      const data = await fetchData(res, block)
+      const data = await fetchData(address, block)
       setList(data)
       return true
     })()
@@ -94,4 +91,4 @@ const useListNftInListing = (res) => {
   return list
 }
 
-export default useListNftInListing
+export default useListNftMyOffer
