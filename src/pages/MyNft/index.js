@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react'
 import Card from '../../components/Card'
 import Modal from '../../components/Modal'
 import useListNftInListing from '../../hooks/useListNftInListing'
+import useListNftMyOffer from '../../hooks/useListNftMyOffer'
 import { ClassItem, ITEMS_PER_PAGE } from '../../constants'
 import { useSelector } from 'react-redux'
 import useListNftMyBought from '../../hooks/useListNftMyBought'
@@ -52,7 +53,7 @@ export default function Marketplace() {
   const chainId = useSelector((state) => state.provider.chainId)
   const [search, setSearch] = useState('')
   const [sortBy, setSortBy] = useState('Lowest ID')
-  const [filterByOrderType, setFilterByOrderType] = useState('My NFT')
+  const [filterByOrderType, setFilterByOrderType] = useState('My NFTs')
   const [filterByClassify, setFilterByClassify] = useState('All')
   const [listDataLength, setListDataLength] = useState([])
   const account = useSelector((state) => state.provider.account)
@@ -61,7 +62,8 @@ export default function Marketplace() {
   const [itemModal, setItemModal] = useState({})
 
   const listNftIsListing = useListNftInListing()
-  const listNftIsMyBought = useListNftMyBought()
+  const listNftIsMyBought = useListNftMyBought(account)
+  const listNftIsMyOffer = useListNftMyOffer(account)
   const [pageCount, setPageCount] = useState(0)
   const [itemOffset, setItemOffset] = useState(0)
   const [currentItems, setCurrentItems] = useState([])
@@ -71,11 +73,14 @@ export default function Marketplace() {
       case 'My Selling':
         result = _.filter(listNftIsListing, (item) => account && item.seller.toLowerCase() === account.toLowerCase())
         break
-      case 'My NFT':
+      case 'My NFTs':
         result = listNftIsMyBought
         break
+      case 'My Offers':
+        result = listNftIsMyOffer
+        break
       default:
-        result = listNftIsListing
+        result = listNftIsMyBought
         break
     }
     if (filterByClassify !== 'All') {
@@ -156,11 +161,12 @@ export default function Marketplace() {
             displayEmpty
             label={t('Type')}
             size="small"
-            defaultValue="My NFT"
+            defaultValue="My NFTs"
             onChange={(e) => setFilterByOrderType(e.target.value)}
           >
-            <MenuItem value="My NFT">{t('My NFT')}</MenuItem>
+            <MenuItem value="My NFTs">{t('My NFTs')}</MenuItem>
             <MenuItem value="My Selling">{t('My Selling')}</MenuItem>
+            <MenuItem value="My Offers">{t('My Offers')}</MenuItem>
           </StyledSelect>
         </StyledFormControl>
         <StyledFormControl width="120px" value={filterByClassify}>

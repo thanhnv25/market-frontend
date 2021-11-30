@@ -73,7 +73,6 @@ export default forwardRef(function Card(props, ref) {
   const onBorrow = useBorrow()
   const isBorrowed = item.borrower !== '0x0000000000000000000000000000000000000000'
   const isLender = item.lender.toLowerCase() === account.toLowerCase()
-  console.log(item)
 
   const icon =
     item.class === 1 ? (
@@ -152,15 +151,15 @@ export default forwardRef(function Card(props, ref) {
 
           {showBuyOrSellButton && !isBorrowed ? (
             <Box display="flex" justifyContent="space-between">
-              <Typography fontSize="14px" color="#90b8ef" fontWeight={400}>
+              <Typography fontSize="14px" color="#90b8ef" fontWeight={400} style={{ marginTop: "12px" }} >
                 {item.remainBlock <= 0
-                  ? t('Rental sesstion ended')
+                  ? t('Rental session ended')
                   : t('Rental end at block: ') + item.lendBlockDuration}
               </Typography>
               <MI.AccessAlarms
                 onClick={() => blockRemains(chainId, item.lendBlockDuration)}
                 fontSize="small"
-                style={{ fill: '#c23a3a', cursor: 'pointer' , marginTop: "12px"}}
+                style={{ fill: '#c23a3a', cursor: 'pointer', marginTop: "12px" }}
               />
             </Box>
           ) : null}
@@ -236,11 +235,44 @@ export default forwardRef(function Card(props, ref) {
               histories.map((item, index) => {
                 return (
                   <Box display="flex" justifyContent="space-between">
-                    <MI.CopyAllSharp
-                      onClick={() => copyBuyer(item.borrower)}
-                      fontSize="small"
-                      style={{ fill: '#c23a3a', cursor: 'pointer' }}
+                    <link
+                      rel="stylesheet"
+                      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
                     />
+                    <Box>
+                      <MI.CopyAllSharp
+                        onClick={() => {
+                          copyBuyer(item.buyer)
+                          document.getElementById(`button-copy-${index}`).style.display = "none";
+                          document.getElementById(`button-succ-${index}`).style.display = "block";
+                          setTimeout(() => {
+                            document.getElementById(`button-succ-${index}`).style.display = "none";
+                            document.getElementById(`button-copy-${index}`).style.display = "block";
+                          }, 1500)
+                        }}
+                        fontSize="small"
+                        style={{
+                          fill: '#c23a3a',
+                          marginTop: "2px",
+                          cursor: 'pointer',
+                          fontSize: "17px"
+                        }}
+                        id={`button-copy-${index}`}
+                      />
+
+                      <i
+                        id={`button-succ-${index}`}
+                        className="far fa-check-circle"
+                        style={{
+                          marginTop: '2px',
+                          color: '#c23a3a',
+                          cursor: 'pointer',
+                          display: "none",
+                          fontStyle: "normal",
+                          fontSize: "13px",
+                        }}
+                      >  Copied </i>
+                    </Box>
                     {item.borrower !== '0x0000000000000000000000000000000000000000' ? (
                       <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
                         {`${item.borrower.slice(0, 6)}...${item.borrower.slice(
@@ -256,10 +288,6 @@ export default forwardRef(function Card(props, ref) {
                     <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
                       {item.price} ETH ({item.time})
                     </Typography>
-                    <link
-                      rel="stylesheet"
-                      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.1/css/all.min.css"
-                    />
                     <i
                       class="fas fa-external-link-alt"
                       style={{

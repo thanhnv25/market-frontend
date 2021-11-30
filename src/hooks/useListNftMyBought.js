@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useState,useCallback } from 'react'
 import useNtfContract from './useNtfContract'
 import useNtfMarketContract from './useNtfMarketContract'
 import axios from 'axios'
@@ -6,7 +6,7 @@ import { useSelector } from 'react-redux'
 import moment from 'moment'
 import { ethers } from 'ethers'
 
-const useListNftMyBought = () => {
+const useListNftMyBought = (address) => {
   const nftContract = useNtfContract()
   const nftMarketContract = useNtfMarketContract()
   const [list, setList] = useState([])
@@ -25,7 +25,7 @@ const useListNftMyBought = () => {
     return () => socket && socket.off('NeedUpdateData')
   }, [socket])
 
-  const fetchUserNft = async () => {
+  const fetchUserNft = useCallback(async (account) => {
     const markets = await axios.get(`${process.env.REACT_APP_API_URL}/nfts/user/${account}`)
     const data = markets.data.nfts.map((marketItem) => {
       const sellHistories = marketItem.sellHistories.map((history) => {
@@ -58,17 +58,19 @@ const useListNftMyBought = () => {
       }
       return item
     })
-    setList(data)
-  }
+    return data
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
   useEffect(() => {
-    ;(async () => {
+    ; (async () => {
       if (nftContract && nftMarketContract && account) {
-        await fetchUserNft()
+        const data = await fetchUserNft(address)
+        setList(data)
         return true
       }
     })()
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [account, nftContract, nftMarketContract, timestamp])
+  }, [fetchUserNft, account, nftContract, nftMarketContract, timestamp])
   return list
 }
 
