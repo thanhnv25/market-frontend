@@ -153,7 +153,7 @@ export default forwardRef(function Card(props, ref) {
             <Box display="flex" justifyContent="space-between">
               <Typography fontSize="14px" color="#90b8ef" fontWeight={400} style={{ marginTop: "12px" }} >
                 {item.remainBlock <= 0
-                  ? t('Rental sesstion ended')
+                  ? t('Rental session ended')
                   : t('Rental end at block: ') + item.lendBlockDuration}
               </Typography>
               <MI.AccessAlarms
