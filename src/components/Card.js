@@ -212,17 +212,17 @@ export default forwardRef(function Card(props, ref) {
           {showBuyOrSellButton && isOwner && !isLock && (
             <Box style={{ borderColor: '#ffffff', marginTop: '20px' }} sx={{ minWidth: 120 }}>
               <FormControl style={{ borderColor: '#ffffff' }} fullWidth>
-                <InputLabel style={{ color: '#ffffff' }}>Action</InputLabel>
+                <InputLabel style={{ color: '#ffffff' }}>{t("Action")}</InputLabel>
                 <StyledSelect
                   style={{ color: '#ffffff' }}
                   width="20vw"
                   value={option}
-                  label="Action"
+                  label={t("Action")}
                   onChange={handleChange}
                 >
-                  <MenuItem value={1}>Sell directly</MenuItem>
-                  <MenuItem value={2}>Create auction</MenuItem>
-                  <MenuItem value={3}>Up for rent</MenuItem>
+                  <MenuItem value={1}>{t('Sell Directly')}</MenuItem>
+                  <MenuItem value={2}>{t('Create Auction')}</MenuItem>
+                  <MenuItem value={3}>{t('Up for rent')}</MenuItem>
                 </StyledSelect>
               </FormControl>
             </Box>
