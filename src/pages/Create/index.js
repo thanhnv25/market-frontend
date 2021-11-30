@@ -256,10 +256,10 @@ export default function Create() {
       </Heading>
       <Box style={{ borderColor: '#decbbd' }} sx={{ minWidth: 120 }} width="20vw">
         <FormControl style={{ borderColor: '#decbbd' }} fullWidth>
-          <InputLabel style={{ color: '#decbbd' }}>Action</InputLabel>
-          <StyledSelect style={{ color: '#decbbd' }} value={option} label="Action" onChange={handleChange}>
-            <MenuItem value={1}>Create Item</MenuItem>
-            <MenuItem value={2}>Create Auction</MenuItem>
+          <InputLabel style={{ color: '#decbbd' }}>{t('Action')}</InputLabel>
+          <StyledSelect style={{ color: '#decbbd' }} value={option} label={t("Action")} onChange={handleChange}>
+            <MenuItem value={1}>{t('Create Item')}</MenuItem>
+            <MenuItem value={2}>{t('Create Auction')}</MenuItem>
           </StyledSelect>
         </FormControl>
       </Box>

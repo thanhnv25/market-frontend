@@ -282,7 +282,7 @@ export default forwardRef(function Card(props, ref) {
                       </Typography>
                     ) : (
                       <Typography fontSize="14px" color="#ffffff" fontWeight={500}>
-                        {`On Rental`}
+                        {t(`On Rental`)}
                       </Typography>
                     )}
                     <Typography fontSize="14px" color="#ffffff" fontWeight={500}>

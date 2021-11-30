@@ -88,5 +88,10 @@
   "Auction Ended": "オークションが終了しました",
   "My NFTs": "マイNFTs",
   "My Selling": "マイセリング",
-  "My Offers": "マイオファー"
+  "My Offers": "マイオファー",
+  "Create Item": "アイテム作成",
+  "Create Auction": "オークション作成",
+  "Sell Directly": "直接売却",
+  "Action": "アクション",
+  "On Rental": "レンタルについて"
 }
