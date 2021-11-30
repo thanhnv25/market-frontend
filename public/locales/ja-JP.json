@@ -23,7 +23,7 @@
   "Error": "エラー",
   "Please fill input": "入力してください",
   "Min sell price must greater than 0": "最小販売価格は0より大きくなければなりません",
-  "Number of block must >= 10 ": "ブロック数は11以上でなければなりません",
+  "Number of block must >= 10 ": "ブロック数は10以上でなければなりません",
   "Sell price must greater than 0": "販売価格は1より大きくなければなりません",
   "Lend price must greater than 0": "レンディング価格は1より大きくなければなりません",
   "Offer amount must greater than current price": "オファー金額は現在の価格より大きくなければなりません",
